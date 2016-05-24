@@ -1,0 +1,9 @@
+
+# By extension
+*.exe
+*.suo
+
+# All directories and files in a directory
+AngryShop/bin/**/*
+AngryShop/obj/**/*
+.vs/**/*
