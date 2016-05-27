@@ -3,72 +3,60 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:extensions="clr-namespace:AngryShop.Helpers.Extensions"
         xmlns:local="clr-namespace:AngryShop.Items.Enums"
-        Title="Configuration" Height="400" Width="380" Background="WhiteSmoke"
-        Icon="pack://application:,,,/AngryShop;component/Resources/find.ico">
+        Title="Configuration" Height="370" Width="380" Background="WhiteSmoke"
+        Icon="pack://application:,,,/Simultaneous Text Edit;component/Resources/find.ico">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/AngryShop;component/Resources/DictionaryGeneric.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Simultaneous Text Edit;component/Resources/DictionaryGeneric.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
     <Grid Margin="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="150"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
         <StackPanel HorizontalAlignment="Right" Grid.Row="0">
-            <TextBlock Text="Sort Order:" HorizontalAlignment="Right" Margin="0,9,5,0"/>
-            <TextBlock Text="Frequency threshold:" HorizontalAlignment="Right" Margin="0,23,5,0"
+            <TextBlock Text="Sort Order:" HorizontalAlignment="Right" Margin="0,5,15,0"/>
+            <TextBlock Text="Frequency threshold ≥" HorizontalAlignment="Right" Margin="0,58,10,0"
                        ToolTip="Minimum frequency for words to appear on list"/>
-            <TextBlock Text="List visibility:" HorizontalAlignment="Right" Margin="0,25,5,0"/>
+            <TextBlock Text="List visibility:" HorizontalAlignment="Right" Margin="0,25,15,0"/>
+            <TextBlock Text="Launch on system start:" HorizontalAlignment="Right" Margin="0,22,15,0"/>
+            <TextBlock Text="Hide common words:" HorizontalAlignment="Right" Margin="0,7,15,0"/>
         </StackPanel>
 
         <StackPanel Grid.Column="1" HorizontalAlignment="Left" Grid.Row="0">
-            <StackPanel Orientation="Horizontal">
-                <ComboBox Width="100" SelectedIndex="0" VerticalAlignment="Center"
-                          ItemsSource="{Binding Source={extensions:Enumeration {x:Type local:SortOrderTypes}}}"
-                          DisplayMemberPath="Description" SelectedValue="{Binding SortOrderType}" SelectedValuePath="Value" />
-                <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
-                    <RadioButton Content="ascending" GroupName="SortOrderType" IsChecked="{Binding Path=SortOrderIsAscending}"/>
-                    <RadioButton Content="descending" GroupName="SortOrderType" IsChecked="{Binding Path=SortOrderIsDescending}" Margin="0,3,0,0" />
-                </StackPanel>
+            <ComboBox Width="100" SelectedIndex="0" VerticalAlignment="Center"
+                        ItemsSource="{Binding Source={extensions:Enumeration {x:Type local:SortOrderTypes}}}"
+                        DisplayMemberPath="Description" SelectedValue="{Binding SortOrderType}" SelectedValuePath="Value" />
+
+            <StackPanel Margin="0,5,0,0" VerticalAlignment="Center">
+                <RadioButton Content="ascending" GroupName="SortOrderType" IsChecked="{Binding Path=SortOrderIsAscending}"/>
+                <RadioButton Content="descending" GroupName="SortOrderType" IsChecked="{Binding Path=SortOrderIsDescending}" Margin="0,3,0,0" />
             </StackPanel>
 
-            <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
-                <TextBlock Text="≥" VerticalAlignment="Center"/>
-                <TextBox Width="100" Margin="5,0,0,0" Text="{Binding FrequencyThreshold, UpdateSourceTrigger=PropertyChanged}"/>
-            </StackPanel>
+            <TextBox Width="100" Margin="0,10,0,0" Text="{Binding FrequencyThreshold, UpdateSourceTrigger=PropertyChanged}"/>
             
             <ComboBox Width="120" SelectedIndex="0" Margin="0,15,0,0"
                       ItemsSource="{Binding Source={extensions:Enumeration {x:Type local:ListVisibilityTypes}}}"
                       DisplayMemberPath="Description" SelectedValue="{Binding ListVisibilityType}" SelectedValuePath="Value"/>
 
-            <TextBlock Margin="0,5,0,0" Text="Automatically upon focussing on a text input box"
-                       TextWrapping="Wrap"/>
-
-        </StackPanel>
-        
-        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,30,0,0">
-            <CheckBox Content="Launch on system start" IsChecked="{Binding Path=ToLaunchOnSystemStart}"/>
-            
+            <CheckBox Margin="0,20,0,0" IsChecked="{Binding Path=ToLaunchOnSystemStart}"/>
             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                <CheckBox Content="Hide common words" IsChecked="{Binding Path=ToHideCommonWords}"/>
-                <TextBlock Margin="70,0,0,0">
+                <CheckBox IsChecked="{Binding Path=ToHideCommonWords}"/>
+                <TextBlock Margin="20,-2,0,0">
                     <Hyperlink Click="HyperlinkEditWordsList_OnClick">Edit words list</Hyperlink>
                 </TextBlock>
             </StackPanel>
+
         </StackPanel>
 
 
-        <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Bottom"
+        <Button Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Bottom"
                 Content="Set to defaults" Width="120" Click="ButtonSetToDefaults_Click"/>
-        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal"
+        <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal"
                     VerticalAlignment="Bottom" HorizontalAlignment="Right">
             <Button Content="Save" Width="80" Click="ButtonSave_Click" IsEnabled="{Binding NeedsSaving}"/>
             <Button Content="Cancel" Width="80" Margin="10,0,0,0" Click="ButtonCancel_Click"/>

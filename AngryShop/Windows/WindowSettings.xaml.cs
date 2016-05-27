@@ -2,7 +2,6 @@
 using AngryShop.Entities;
 using AngryShop.Helpers;
 using AngryShop.Items;
-using Microsoft.Win32;
 
 namespace AngryShop.Windows
 {

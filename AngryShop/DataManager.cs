@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows;
@@ -20,7 +22,7 @@ namespace AngryShop
         public static Configuration Configuration { get; set; }
 
         /// <summary> "Common" or "stop" words that are not to be shown in list of words </summary>
-        public static string[] CommonWords { get; set; }
+        public static List<string> CommonWords { get; set; }
 
         public static int ThisProcessId { get; set; }
         public static int LastProcessId { get; set; }
@@ -38,18 +40,18 @@ namespace AngryShop
                     using (var sr = new StreamReader(path))
                     {
                         string text = sr.ReadToEnd();
-                        CommonWords = text.Split(new[] { '\n' });
+                        CommonWords = text.Split(new[] { '\n' }).ToList();
                     }
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show(string.Format(@"Could not read the ""Common words"" file.\r\n{0}", ex.Message));
-                    CommonWords = new string[0];
+                    CommonWords = new List<string>();
                 }
             }
             else
             {
-                CommonWords = new string[0];
+                CommonWords = new List<string>();
             }
         }
 

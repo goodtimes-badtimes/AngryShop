@@ -8,7 +8,7 @@ namespace AngryShop.Helpers
 {
     static class TextHelper
     {
-        public static List<string> GetListOfUniqueWords(string text)
+        public static IEnumerable<string> GetListOfUniqueWords(string text)
         {
             text = removeCharacters(text);
             var words = text.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -49,13 +49,21 @@ namespace AngryShop.Helpers
             return listWords;
         }
 
+        public static string GetNewTextForSending(string text, string oldSubstring, string newSubstring)
+        {
+            text = text.Replace(string.Format(" {0} ", oldSubstring), string.Format(" {0} ", newSubstring));
+
+            return text;
+        }
+
         private static string removeCharacters(string input)
         {
             var sb = new StringBuilder();
             foreach (char c in input)
             {
-                if (char.IsLetterOrDigit(c) || c == '\'') sb.Append(c);
-                else if (char.IsWhiteSpace(c)) sb.Append(' ');
+                //if (char.IsLetterOrDigit(c) || c == '\'') sb.Append(c);
+
+                sb.Append(char.IsWhiteSpace(c) ? ' ' : c);
             }
 
             return sb.ToString();

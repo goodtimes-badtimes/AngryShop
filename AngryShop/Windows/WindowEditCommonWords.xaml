@@ -2,11 +2,11 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Edit common words" Height="500" Width="400" 
-        Icon="pack://application:,,,/AngryShop;component/Resources/find.ico">
+        Icon="pack://application:,,,/Simultaneous Text Edit;component/Resources/find.ico">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/AngryShop;component/Resources/DictionaryGeneric.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Simultaneous Text Edit;component/Resources/DictionaryGeneric.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>

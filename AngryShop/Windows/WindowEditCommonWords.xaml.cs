@@ -33,7 +33,7 @@ namespace AngryShop.Windows
                 if (!string.IsNullOrEmpty(arrStr[i]))
                     listWords.Add(arrStr[i]);
             }
-            DataManager.CommonWords = listWords.ToArray();
+            DataManager.CommonWords = listWords;
             DataManager.SaveCommonWords();
             Close();
         }

@@ -10,8 +10,8 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/AngryShop;component/Resources/GlassListBox.xaml"/>
-                <ResourceDictionary Source="pack://application:,,,/AngryShop;component/Resources/ResizeGrip.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Simultaneous Text Edit;component/Resources/GlassListBox.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Simultaneous Text Edit;component/Resources/ResizeGrip.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>        
     </Window.Resources>
@@ -26,7 +26,13 @@
                             <ControlTemplate TargetType="{x:Type ListBoxItem}">
                                 <Grid>
                                     <Border BorderThickness="1" BorderBrush="White" HorizontalAlignment="Left">
-                                        <TextBlock Text="{Binding Path=.}" HorizontalAlignment="Left" Margin="0,0,0,0" MouseDown="listItemContent_OnMouseDown"/>
+                                        <TextBlock Text="{Binding Path=.}" HorizontalAlignment="Left" Margin="0,0,0,0" MouseLeftButtonDown="listItemContent_OnMouseDown">
+                                            <TextBlock.ContextMenu>
+                                                <ContextMenu>
+                                                    <MenuItem Header="Add to common word list" Click="MenuItemAddToCommonWordsList_OnClick"/>
+                                                </ContextMenu>
+                                            </TextBlock.ContextMenu>
+                                        </TextBlock>
                                     </Border>
                                     <TextBox Text="{Binding Path=.}" HorizontalAlignment="Stretch" x:Name="PART_TextBox" Visibility="Collapsed" PreviewKeyDown="partTextBox_OnPreviewKeyDown"/>
                                 </Grid>
@@ -37,7 +43,7 @@
             </Grid.Resources>
 
             <RepeatButton VerticalAlignment="Top" HorizontalAlignment="Right" Width="20" Height="20" Margin="0,5,5,0" Style="{StaticResource CloseLineButton}" Content="M 0 0 L 10 10 M 10 0 L 0 10" Click="buttonClose_OnClick"/>
-            <ListBox Margin="0,25,0,20" Background="Transparent" Name="lstItems" BorderThickness="0" Style="{StaticResource GlassListBox}" >
+            <ListBox Margin="5,28,7,20" Background="Transparent" Name="lstItems" BorderThickness="0" Style="{StaticResource GlassListBox}">
                 <!--<ListBox.ItemContainerStyle>
                     <Style TargetType="ListBoxItem">
                         <Setter Property="Margin" Value="5"/>

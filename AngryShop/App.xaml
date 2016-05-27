@@ -5,7 +5,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/AngryShop;component/Resources/DictionaryGeneric.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Simultaneous Text Edit;component/Resources/DictionaryGeneric.xaml"/>
                 <!-- Place further resources here -->
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
