@@ -12,23 +12,27 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
-    <Grid Margin="20">
+    <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
+        
+        <TextBlock HorizontalAlignment="Right" VerticalAlignment="Top" Grid.Column="1" Margin="0,2,4,0">
+            <Hyperlink Click="HyperlinkAbout_OnClick">About</Hyperlink>
+        </TextBlock>
 
-        <StackPanel HorizontalAlignment="Right" Grid.Row="0">
+        <StackPanel HorizontalAlignment="Right" Grid.Row="0" Grid.Column="0" Margin="20,20,0,0">
             <TextBlock Text="Sort Order:" HorizontalAlignment="Right" Margin="0,5,15,0"/>
             <TextBlock Text="Frequency threshold ≥" HorizontalAlignment="Right" Margin="0,58,10,0"
                        ToolTip="Minimum frequency for words to appear on list"/>
             <TextBlock Text="List visibility:" HorizontalAlignment="Right" Margin="0,25,15,0"/>
             <TextBlock Text="Launch on system start:" HorizontalAlignment="Right" Margin="0,22,15,0"/>
-            <TextBlock Text="Hide common words:" HorizontalAlignment="Right" Margin="0,7,15,0"/>
+            <TextBlock Text="Suppress selected words:" HorizontalAlignment="Right" Margin="0,7,15,0"/>
         </StackPanel>
 
-        <StackPanel Grid.Column="1" HorizontalAlignment="Left" Grid.Row="0">
-            <ComboBox Width="100" SelectedIndex="0" VerticalAlignment="Center"
+        <StackPanel Grid.Column="1" HorizontalAlignment="Left" Grid.Row="0" Margin="0,20,20,0">
+            <ComboBox Width="120" SelectedIndex="0" VerticalAlignment="Center"
                         ItemsSource="{Binding Source={extensions:Enumeration {x:Type local:SortOrderTypes}}}"
                         DisplayMemberPath="Description" SelectedValue="{Binding SortOrderType}" SelectedValuePath="Value" />
 
@@ -39,7 +43,7 @@
 
             <TextBox Width="100" Margin="0,10,0,0" Text="{Binding FrequencyThreshold, UpdateSourceTrigger=PropertyChanged}"/>
             
-            <ComboBox Width="120" SelectedIndex="0" Margin="0,15,0,0"
+            <ComboBox Width="140" SelectedIndex="0" Margin="0,15,0,0"
                       ItemsSource="{Binding Source={extensions:Enumeration {x:Type local:ListVisibilityTypes}}}"
                       DisplayMemberPath="Description" SelectedValue="{Binding ListVisibilityType}" SelectedValuePath="Value"/>
 
@@ -55,9 +59,9 @@
 
 
         <Button Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Bottom"
-                Content="Set to defaults" Width="120" Click="ButtonSetToDefaults_Click"/>
+                Content="Set to defaults" Width="120" Click="ButtonSetToDefaults_Click" Margin="20,0,0,20"/>
         <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal"
-                    VerticalAlignment="Bottom" HorizontalAlignment="Right">
+                    VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,20,20">
             <Button Content="Save" Width="80" Click="ButtonSave_Click" IsEnabled="{Binding NeedsSaving}"/>
             <Button Content="Cancel" Width="80" Margin="10,0,0,0" Click="ButtonCancel_Click"/>
         </StackPanel>

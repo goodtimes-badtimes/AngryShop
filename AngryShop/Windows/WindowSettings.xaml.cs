@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System.Diagnostics;
+using System.Windows;
+using System.Windows.Navigation;
 using AngryShop.Entities;
 using AngryShop.Helpers;
 using AngryShop.Items;
@@ -40,6 +42,12 @@ namespace AngryShop.Windows
         private void HyperlinkEditWordsList_OnClick(object sender, RoutedEventArgs e)
         {
             var win = new WindowEditCommonWords {Owner = this};
+            win.ShowDialog();
+        }
+
+        private void HyperlinkAbout_OnClick(object sender, RoutedEventArgs e)
+        {
+            var win = new WindowAboutDialog { Owner = this };
             win.ShowDialog();
         }
     }

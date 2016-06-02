@@ -12,19 +12,21 @@ using System.Windows.Input;
 using System.Windows.Threading;
 using AngryShop.Helpers;
 using AngryShop.Helpers.Extensions;
+using AngryShop.Items;
 using AngryShop.Items.Enums;
 using ContextMenu = System.Windows.Controls.ContextMenu;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using MessageBox = System.Windows.MessageBox;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 using TextBox = System.Windows.Controls.TextBox;
+using TextDataFormat = System.Windows.TextDataFormat;
 
 namespace AngryShop.Windows
 {
     public partial class MainWindow
     {
-        [DllImport("Kernel32")]
-        public static extern void AllocConsole();
+        //[DllImport("Kernel32")]
+        //public static extern void AllocConsole();
 
         private bool _textIsReplacedNow;
 
@@ -32,7 +34,7 @@ namespace AngryShop.Windows
         {
             InitializeComponent();
 
-            //AllocConsole(); this is needed for testing purposes
+            //AllocConsole(); // this is needed for testing purposes
 
             var timer = new DispatcherTimer {Interval = new TimeSpan(0, 0, 0, 1)};
             timer.Tick += _timer_Tick;
@@ -69,9 +71,9 @@ namespace AngryShop.Windows
                 //Console.WriteLine("tick!");
                 focusedElement = AutomationElement.FocusedElement;
             }
-            catch (System.Runtime.InteropServices.COMException)
+            catch (Exception)
             {
-                // Strange exceptions at UIAutomationClient.CUIAutomation8Class.GetFocusedElement()
+                // Strange "Element not available" exceptions at UIAutomationClient.CUIAutomation8Class.GetFocusedElement()
                 // We just will try the same action in the next _timer_Tick()
             }
             if (focusedElement == null) return;
@@ -83,37 +85,42 @@ namespace AngryShop.Windows
                 return;
             }
 
-            
-            //Console.WriteLine(focusedElement.Current.ControlType.ProgrammaticName);
+            Process process = Process.GetProcessById(processId);
+            //Console.WriteLine(@"process.ProcessName: {0}", process.ProcessName);
+            //Console.WriteLine(@"process.MainWindowHandle: {0}", process.MainWindowHandle);
+            //Console.WriteLine(@"process.MainWindowTitle: {0}", process.MainWindowTitle);
+            //Console.WriteLine(@"ProgrammaticName: {0}", focusedElement.Current.ControlType.ProgrammaticName);
+            //Console.WriteLine(@"Name: {0}", focusedElement.Current.Name);
+            //Console.WriteLine(@"ClassName: {0}", focusedElement.Current.ClassName);
+            //Console.WriteLine(@"AutomationId: {0}", focusedElement.Current.AutomationId);
 
-            if ("ControlType.Document ControlType.Pane ControlType.Editor".Contains(
+            if ((process.ProcessName == Constants.InternetExplorerProcessName &&
+                 focusedElement.Current.ControlType.ProgrammaticName == "ControlType.Pane") ||
+                 (process.ProcessName == Constants.MozillaFirefoxProcessName &&
+                 focusedElement.Current.ControlType.ProgrammaticName == "ControlType.Document") ||
+                 (process.ProcessName == Constants.GoogleChromeProcessName &&
+                 focusedElement.Current.ControlType.ProgrammaticName == "ControlType.Document") ||
+                !"ControlType.Document ControlType.Pane ControlType.Editor ControlType.ComboBox".Contains(
                     focusedElement.Current.ControlType.ProgrammaticName))
-            {
-                var text = focusedElement.GetText();
-                if (string.IsNullOrEmpty(text))
-                {
-                    if (DataManager.Configuration.ListVisibilityType == ListVisibilityTypes.OnFocus) Hide();
-                    lstItems.ItemsSource = null;
-                }
-                else
-                {
-                    if (DataManager.Configuration.ListVisibilityType == ListVisibilityTypes.OnFocus) Show();
-
-                    DataManager.LastProcessId = processId;
-                    DataManager.LastAutomationClassName = focusedElement.Current.ClassName;
-
-                    //var textShort = text.Length > 50 ? text.Substring(0, 50) : text;
-                    //Console.WriteLine(textShort);
-
-                    var listWords = TextHelper.GetListOfUniqueWords(text);
-                    if (listWords != null)
-                        lstItems.ItemsSource = listWords;
-                }
-            }
-            else
             {
                 if (DataManager.Configuration.ListVisibilityType == ListVisibilityTypes.OnFocus) Hide();
                 lstItems.ItemsSource = null;
+            }
+            else
+            {
+                var text = focusedElement.GetText() ?? string.Empty;
+                if (DataManager.Configuration.ListVisibilityType == ListVisibilityTypes.OnFocus) Show();
+
+                //DataManager.LastProcessId = processId;
+                //DataManager.LastAutomationName = focusedElement.Current.Name;
+                DataManager.LastAutomationElement = focusedElement;
+
+                //var textShort = text.Length > 50 ? text.Substring(0, 50) : text;
+                //Console.WriteLine(textShort);
+
+                var listWords = TextHelper.GetListOfUniqueWords(text);
+                if (listWords != null)
+                    lstItems.ItemsSource = listWords;
             }
         }
 
@@ -122,20 +129,11 @@ namespace AngryShop.Windows
         {
             _textIsReplacedNow = true; // don't get active window text while we replacing it with our edited one
 
-            Process process = Process.GetProcessById(DataManager.LastProcessId);
-            AutomationElement windowElement = AutomationElement.FromHandle(process.MainWindowHandle);
-            if (windowElement != null)
+            var element = DataManager.LastAutomationElement;
+            var text = element.GetText();
+            if (!string.IsNullOrEmpty(text))
             {
-                var elementCollection = FindElementFromClassName(windowElement, DataManager.LastAutomationClassName);
-                if (elementCollection != null && elementCollection.Count > 0)
-                {
-                    var element = elementCollection[0];
-                    var text = element.GetText();
-                    if (!string.IsNullOrEmpty(text))
-                    {
-                        insertTextUsingUiAutomation(element, TextHelper.GetNewTextForSending(text, oldSubstring, newSubstring));
-                    }
-                }
+                insertTextUsingUiAutomation(element, TextHelper.GetNewTextForSending(text, oldSubstring, newSubstring));
             }
 
             _textIsReplacedNow = false;
@@ -145,7 +143,7 @@ namespace AngryShop.Windows
         {
             return targetApp.FindAll(
                 TreeScope.Descendants,
-                new PropertyCondition(AutomationElement.ClassNameProperty, className));
+                new PropertyCondition(AutomationElement.NameProperty, className));
         }
 
 
@@ -221,6 +219,7 @@ namespace AngryShop.Windows
 
         private void buttonClose_OnClick(object sender, RoutedEventArgs e)
         {
+            DataManager.Configuration.ListVisibilityType = ListVisibilityTypes.OnTrayIconClick;
             Close();
         }
 
@@ -243,34 +242,7 @@ namespace AngryShop.Windows
                         "String parameter must not be null.");
 
                 if (element == null)
-                    throw new ArgumentNullException(
-                        "AutomationElement parameter must not be null");
-
-                // A series of basic checks prior to attempting an insertion.
-                //
-                // Check #1: Is control enabled?
-                // An alternative to testing for static or read-only controls 
-                // is to filter using 
-                // PropertyCondition(AutomationElement.IsEnabledProperty, true) 
-                // and exclude all read-only text controls from the collection.
-                if (!element.Current.IsEnabled)
-                {
-                    throw new InvalidOperationException(
-                        "The control with an AutomationID of "
-                        + element.Current.AutomationId
-                        + " is not enabled.\n\n");
-                }
-
-                // Check #2: Are there styles that prohibit us 
-                //           from sending text to this control?
-                if (!element.Current.IsKeyboardFocusable)
-                {
-                    throw new InvalidOperationException(
-                        "The control with an AutomationID of "
-                        + element.Current.AutomationId
-                        + "is read-only.\n\n");
-                }
-
+                    throw new ArgumentNullException("AutomationElement parameter must not be null");
 
                 // Once you have an instance of an AutomationElement,  
                 // check if it supports the ValuePattern pattern.
@@ -283,59 +255,70 @@ namespace AngryShop.Windows
                 //       does not support setting the text of multi-line edit or document controls.
                 //       For this reason, text input must be simulated n using one of the following methods.
 
-                if (!element.TryGetCurrentPattern(
-                    ValuePattern.Pattern, out valuePattern))
+                bool toSendKeys = false;
+
+                if (element.TryGetCurrentPattern(ValuePattern.Pattern, out valuePattern))
+                {
+                    // Control supports the ValuePattern pattern so
+                    // we can use the SetValue method to insert content.
+
+                    // Set focus for input functionality and begin.
+                    try
+                    {
+                        element.SetFocus();
+                        ((ValuePattern)valuePattern).SetValue(value);
+                    }
+                    catch (Exception)
+                    {
+                        toSendKeys = true;
+                    }
+                }
+                else
+                {
+                    toSendKeys = true;
+                }
+
+
+                if (toSendKeys)
                 {
                     // Set focus for input functionality and begin.
-                    element.SetFocus();
+                    try
+                    {
+                        element.SetFocus();
+                    }
+                    catch { }
+
+                    //System.Windows.Forms.Clipboard.SetData(System.Windows.Forms.DataFormats.Text, value);
+                    System.Windows.Forms.Clipboard.SetDataObject(value, false, 10, 100);
+                    //System.Windows.Clipboard.SetText(value, TextDataFormat.UnicodeText);
 
                     // Pause before sending keyboard input.
                     Thread.Sleep(100);
 
-                    // The curly brace is a special symbol for the SendKeys method,
-                    // so we need to escape it by bracketing it with curly brace (treat it like special symbol)
-                    var newWholeText = new StringBuilder();
-                    foreach (char c in value)
-                    {
-                        if (c == '{' || c == '}')
-                        {
-                            newWholeText.Append('{');
-                            newWholeText.Append(c);
-                            newWholeText.Append('}');
-                        }
-                        else
-                        {
-                            newWholeText.Append(c);
-                        }
-                    }
-
                     // Delete existing content in the control and insert new content.
+                    SendKeys.SendWait("{HOME}");   // Move to start of line
                     SendKeys.SendWait("^{HOME}");   // Move to start of control
+                    SendKeys.SendWait("+{END}");   // Select till end of line
                     SendKeys.SendWait("^+{END}");   // Select everything
                     SendKeys.SendWait("{DEL}");     // Delete selection
 
-                    SendKeys.SendWait(newWholeText.ToString());
-                }
-                // Control supports the ValuePattern pattern so we can 
-                // use the SetValue method to insert content.
-                else
-                {
-                    // Set focus for input functionality and begin.
-                    element.SetFocus();
+                    //SendKeys.SendWait("^{A}");      // Select everything if Ctrl+Home didn't work
+                    //SendKeys.SendWait("{DEL}");     // Delete selection
+                    //SendKeys.SendWait("{BACKSPACE}");     // Delete selection
 
-                    ((ValuePattern)valuePattern).SetValue(value);
+                    //SendKeys.SendWait("^{V}");     // Paste new text
+                    SendKeys.SendWait("+{INSERT}");     // Paste new text
+                                                        //SendKeys.Flush();
+
+                    System.Windows.Forms.Clipboard.Clear();
                 }
             }
-            catch (ArgumentNullException exc)
+            catch (Exception exc)
             {
                 LogHelper.SaveError(exc);
+                #if DEBUG
                 MessageBox.Show(exc.Message);
-
-            }
-            catch (InvalidOperationException exc)
-            {
-                LogHelper.SaveError(exc);
-                MessageBox.Show(exc.Message);
+                #endif
             }
         }
 

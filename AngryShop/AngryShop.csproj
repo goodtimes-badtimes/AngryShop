@@ -74,6 +74,9 @@
     <Compile Include="Items\Delegates.cs" />
     <Compile Include="Items\Enums\ListVisibilityTypes.cs" />
     <Compile Include="Items\Enums\SortOrderTypes.cs" />
+    <Compile Include="Windows\WindowAboutDialog.xaml.cs">
+      <DependentUpon>WindowAboutDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\WindowEditCommonWords.xaml.cs">
       <DependentUpon>WindowEditCommonWords.xaml</DependentUpon>
     </Compile>
@@ -101,6 +104,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Resources\GlassListBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\WindowAboutDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

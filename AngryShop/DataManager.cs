@@ -6,6 +6,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows;
+using System.Windows.Automation;
 using System.Xml.Serialization;
 using AngryShop.Entities;
 using AngryShop.Helpers;
@@ -25,8 +26,10 @@ namespace AngryShop
         public static List<string> CommonWords { get; set; }
 
         public static int ThisProcessId { get; set; }
-        public static int LastProcessId { get; set; }
-        public static string LastAutomationClassName { get; set; }
+        //public static int LastProcessId { get; set; }
+
+        public static AutomationElement LastAutomationElement { get; set; }
+        //public static string LastAutomationName { get; set; }
 
 
         /// <summary> Opens common words </summary>
@@ -40,7 +43,7 @@ namespace AngryShop
                     using (var sr = new StreamReader(path))
                     {
                         string text = sr.ReadToEnd();
-                        CommonWords = text.Split(new[] { '\n' }).ToList();
+                        CommonWords = text.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList();
                     }
                 }
                 catch (Exception ex)

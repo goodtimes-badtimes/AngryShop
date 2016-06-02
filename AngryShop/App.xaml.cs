@@ -58,7 +58,7 @@ namespace AngryShop
             {
                 Icon = AngryShop.Properties.Resources.find,
                 Visible = true,
-                
+                Text = "Simultaneous Text Edit"
             };
             _notifyIcon.MouseClick += (s, args) =>
             {
