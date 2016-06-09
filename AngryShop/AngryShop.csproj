@@ -36,7 +36,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>find.ico</ApplicationIcon>
+    <ApplicationIcon>STE_White_MultiImage.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -149,10 +149,10 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\find.ico" />
+    <Resource Include="Resources\STE_White_MultiImage.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="find.ico" />
+    <Resource Include="STE_White_MultiImage.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

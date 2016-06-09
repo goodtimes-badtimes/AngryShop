@@ -60,8 +60,9 @@ namespace AngryShop
 
         public static void SaveCommonWords()
         {
+            CommonWords = CommonWords.OrderBy(p => p).ToList();
             var strb = new StringBuilder();
-            foreach (var commonWord in DataManager.CommonWords)
+            foreach (var commonWord in CommonWords)
             {
                 strb.AppendFormat("{0}\n", commonWord);
             }

@@ -1,13 +1,38 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Windows;
 using AngryShop.Items.Enums;
 
 namespace AngryShop.Helpers
 {
+    class ListItemWord : INotifyPropertyChanged
+    {
+        private string _word;
+        public string Word { get { return _word; } set { _word = value; OnPropertyChanged("Word"); } }
+        public string WordEdited { get; set; }
+        public int Count { get; set; }
+
+        private Visibility _visibilityEdited = Visibility.Collapsed;
+        public Visibility VisibilityEdited { get { return _visibilityEdited; } set { _visibilityEdited = value; OnPropertyChanged("VisibilityEdited"); } }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged(string propertyName)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
     static class TextHelper
     {
-        public static IEnumerable<string> GetListOfUniqueWords(string text)
+
+        public static IEnumerable<ListItemWord> GetListOfUniqueWords(string text)
         {
             var regex = new Regex(@"(\b\w{2,}\b)", RegexOptions.Compiled);
             var words = regex.Matches(text);
@@ -27,34 +52,37 @@ namespace AngryShop.Helpers
 
             var selectedWords =
                 listWords.GroupBy(p => p)
-                    .Select(p => new { p.Key, Count = p.Count() })
+                    .Select(p => new ListItemWord { Word = p.Key, WordEdited = p.Key, Count = p.Count() })
                     .Where(p => p.Count >= DataManager.Configuration.FrequencyThreshold);
 
             if (DataManager.Configuration.SortOrderIsAscending)
             {
                 if (DataManager.Configuration.SortOrderType == SortOrderTypes.ByFrequency)
-                    listWords = selectedWords.OrderBy(p => p.Count).Select(p => p.Key).ToList();
+                    selectedWords = selectedWords.OrderBy(p => p.Count);
                 else if (DataManager.Configuration.SortOrderType == SortOrderTypes.Alphabetical)
-                    listWords = selectedWords.OrderBy(p => p.Key).Select(p => p.Key).ToList();
+                    selectedWords = selectedWords.OrderBy(p => p.Word);
             }
             else if (DataManager.Configuration.SortOrderIsDescending)
             {
                 if (DataManager.Configuration.SortOrderType == SortOrderTypes.ByFrequency)
-                    listWords = selectedWords.OrderByDescending(p => p.Count).Select(p => p.Key).ToList();
+                    selectedWords = selectedWords.OrderByDescending(p => p.Count);
                 else if (DataManager.Configuration.SortOrderType == SortOrderTypes.Alphabetical)
-                    listWords = selectedWords.OrderByDescending(p => p.Key).Select(p => p.Key).ToList();
+                    selectedWords = selectedWords.OrderByDescending(p => p.Word);
             }
 
-            return listWords;
+            return selectedWords.ToList();
         }
 
-        public static string GetNewTextForSending(string text, string oldSubstring, string newSubstring)
+        public static string GetNewTextForSending(string text, List<ListItemWord> items)
         {
             //text = text.Replace(string.Format("{0}", oldSubstring), string.Format(" {0} ", newSubstring));
-
-            var regex = new Regex(string.Format(@"\b({0})\b", oldSubstring), RegexOptions.Compiled);
-            text = regex.Replace(text, newSubstring);
-
+            foreach (var listItemWord in items)
+            {
+                var regex = new Regex(string.Format(@"\b({0})\b", listItemWord.Word), RegexOptions.Compiled);
+                text = regex.Replace(text, listItemWord.WordEdited);
+                listItemWord.Word = listItemWord.WordEdited;
+                listItemWord.VisibilityEdited = Visibility.Collapsed;
+            }
             return text;
         }
     }

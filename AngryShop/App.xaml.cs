@@ -56,7 +56,7 @@ namespace AngryShop
 
             _notifyIcon = new System.Windows.Forms.NotifyIcon
             {
-                Icon = AngryShop.Properties.Resources.find,
+                Icon = AngryShop.Properties.Resources.STE_White_MultiImage,
                 Visible = true,
                 Text = "Simultaneous Text Edit"
             };

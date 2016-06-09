@@ -25,16 +25,18 @@
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type ListBoxItem}">
                                 <Grid>
-                                    <Border BorderThickness="1" BorderBrush="White" HorizontalAlignment="Left">
-                                        <TextBlock Text="{Binding Path=.}" HorizontalAlignment="Left" Margin="0,0,0,0" MouseLeftButtonDown="listItemContent_OnMouseDown">
+                                    <Border BorderThickness="0" BorderBrush="White" HorizontalAlignment="Left">
+                                        <TextBlock HorizontalAlignment="Left" Margin="0,0,0,0" MouseLeftButtonDown="listItemContent_OnMouseDown">
                                             <TextBlock.ContextMenu>
                                                 <ContextMenu>
-                                                    <MenuItem Header="Add to common word list" Click="MenuItemAddToCommonWordsList_OnClick"/>
+                                                    <MenuItem Header="Add to suppression list" Click="MenuItemAddToCommonWordsList_OnClick"/>
                                                 </ContextMenu>
                                             </TextBlock.ContextMenu>
+                                            <Run Text="{Binding Path=Word}"/>
+                                            <Span Typography.Variants="Superscript" FontFamily="Calibri" FontSize="16"><Run Text="{Binding Path=Count}"/></Span>
                                         </TextBlock>
                                     </Border>
-                                    <TextBox Text="{Binding Path=.}" HorizontalAlignment="Stretch" x:Name="PART_TextBox" Visibility="Collapsed" PreviewKeyDown="partTextBox_OnPreviewKeyDown"/>
+                                    <TextBox Text="{Binding Path=WordEdited, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" x:Name="PART_TextBox" Visibility="{Binding VisibilityEdited, Mode=TwoWay}" PreviewKeyDown="partTextBox_OnPreviewKeyDown"/>
                                 </Grid>
                             </ControlTemplate>
                         </Setter.Value>
