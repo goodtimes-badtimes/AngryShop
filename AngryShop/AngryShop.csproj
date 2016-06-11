@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AngryShop</RootNamespace>
-    <AssemblyName>AngryShop</AssemblyName>
+    <AssemblyName>Simultaneous Text Edit</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -36,7 +36,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>find.ico</ApplicationIcon>
+    <ApplicationIcon>STE_White_MultiImage.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -65,6 +65,7 @@
     <Compile Include="Entities\Configuration.cs" />
     <Compile Include="Helpers\Extensions\AutomationExtensions.cs" />
     <Compile Include="Helpers\Extensions\EnumerationExtension.cs" />
+    <Compile Include="Helpers\Extensions\KeyboardHook.cs" />
     <Compile Include="Helpers\LogHelper.cs" />
     <Compile Include="Helpers\RegistryHelper.cs" />
     <Compile Include="Helpers\TextHelper.cs" />
@@ -73,6 +74,9 @@
     <Compile Include="Items\Delegates.cs" />
     <Compile Include="Items\Enums\ListVisibilityTypes.cs" />
     <Compile Include="Items\Enums\SortOrderTypes.cs" />
+    <Compile Include="Windows\WindowAboutDialog.xaml.cs">
+      <DependentUpon>WindowAboutDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\WindowEditCommonWords.xaml.cs">
       <DependentUpon>WindowEditCommonWords.xaml</DependentUpon>
     </Compile>
@@ -100,6 +104,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Resources\GlassListBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\WindowAboutDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -141,10 +149,10 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\find.ico" />
+    <Resource Include="Resources\STE_White_MultiImage.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="find.ico" />
+    <Resource Include="STE_White_MultiImage.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

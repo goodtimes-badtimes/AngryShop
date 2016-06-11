@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows;
+using System.Windows.Automation;
 using System.Xml.Serialization;
 using AngryShop.Entities;
 using AngryShop.Helpers;
@@ -20,11 +23,13 @@ namespace AngryShop
         public static Configuration Configuration { get; set; }
 
         /// <summary> "Common" or "stop" words that are not to be shown in list of words </summary>
-        public static string[] CommonWords { get; set; }
+        public static List<string> CommonWords { get; set; }
 
         public static int ThisProcessId { get; set; }
-        public static int LastProcessId { get; set; }
-        public static string LastAutomationClassName { get; set; }
+        //public static int LastProcessId { get; set; }
+
+        public static AutomationElement LastAutomationElement { get; set; }
+        //public static string LastAutomationName { get; set; }
 
 
         /// <summary> Opens common words </summary>
@@ -38,25 +43,26 @@ namespace AngryShop
                     using (var sr = new StreamReader(path))
                     {
                         string text = sr.ReadToEnd();
-                        CommonWords = text.Split(new[] { '\n' });
+                        CommonWords = text.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList();
                     }
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show(string.Format(@"Could not read the ""Common words"" file.\r\n{0}", ex.Message));
-                    CommonWords = new string[0];
+                    CommonWords = new List<string>();
                 }
             }
             else
             {
-                CommonWords = new string[0];
+                CommonWords = new List<string>();
             }
         }
 
         public static void SaveCommonWords()
         {
+            CommonWords = CommonWords.OrderBy(p => p).ToList();
             var strb = new StringBuilder();
-            foreach (var commonWord in DataManager.CommonWords)
+            foreach (var commonWord in CommonWords)
             {
                 strb.AppendFormat("{0}\n", commonWord);
             }

@@ -9,20 +9,28 @@ namespace AngryShop.Helpers.Extensions
     {
         public static string GetText(this AutomationElement element)
         {
-            object patternObj;
-            if (element.TryGetCurrentPattern(ValuePattern.Pattern, out patternObj))
+            try
             {
-                var valuePattern = (ValuePattern)patternObj;
-                return valuePattern.Current.Value;
+                object patternObj;
+                if (element.TryGetCurrentPattern(ValuePattern.Pattern, out patternObj))
+                {
+                    var valuePattern = (ValuePattern)patternObj;
+                    return valuePattern.Current.Value;
+                }
+                else if (element.TryGetCurrentPattern(TextPattern.Pattern, out patternObj))
+                {
+                    var textPattern = (TextPattern)patternObj;
+                    return textPattern.DocumentRange.GetText(-1).TrimEnd('\r'); // often there is an extra '\r' hanging off the end.
+                }
+                else
+                {
+                    return element.Current.Name;
+                }
             }
-            else if (element.TryGetCurrentPattern(TextPattern.Pattern, out patternObj))
+            catch (Exception e)
             {
-                var textPattern = (TextPattern)patternObj;
-                return textPattern.DocumentRange.GetText(-1).TrimEnd('\r'); // often there is an extra '\r' hanging off the end.
-            }
-            else
-            {
-                return element.Current.Name;
+                LogHelper.SaveError(e);
+                return null;
             }
         }
 
@@ -34,7 +42,7 @@ namespace AngryShop.Helpers.Extensions
 
             if (focusedElement.TryGetCurrentPattern(TextPattern.Pattern, out currentPattern))
             {
-                TextPattern textPattern = (TextPattern)currentPattern;
+                var textPattern = (TextPattern)currentPattern;
                 TextPatternRange[] textPatternRanges = textPattern.GetSelection();
                 if (textPatternRanges.Length > 0)
                 {

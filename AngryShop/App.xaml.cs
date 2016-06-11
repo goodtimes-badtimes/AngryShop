@@ -1,15 +1,21 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Windows;
+using System.Windows.Forms;
+using AngryShop.Helpers.Extensions;
+using AngryShop.Items.Enums;
 using AngryShop.Windows;
 using Application = System.Windows.Application;
+using MessageBox = System.Windows.MessageBox;
 
 namespace AngryShop
 {
     public partial class App
     {
+        private KeyboardHook _hook;
         private System.Windows.Forms.NotifyIcon _notifyIcon;
 
+        private bool _listWindowIsShown;
         private bool _isExit;
 
         
@@ -28,6 +34,7 @@ namespace AngryShop
                 {
                     args.Cancel = true;
                     MainWindow.Hide();
+                    _listWindowIsShown = false;
                 }
                 else
                 {
@@ -47,18 +54,66 @@ namespace AngryShop
                 }
             };
 
-            _notifyIcon = new System.Windows.Forms.NotifyIcon();
-            _notifyIcon.MouseClick += (s, args) => showMainWindow();
-            _notifyIcon.Icon = AngryShop.Properties.Resources.find;
-            _notifyIcon.Visible = true;
+            _notifyIcon = new System.Windows.Forms.NotifyIcon
+            {
+                Icon = AngryShop.Properties.Resources.STE_White_MultiImage,
+                Visible = true,
+                Text = "Simultaneous Text Edit"
+            };
+            _notifyIcon.MouseClick += (s, args) =>
+            {
+                if (DataManager.Configuration.ListVisibilityType == ListVisibilityTypes.OnTrayIconClick)
+                    showMainWindow();
+            };
 
-            var menuItemConfig = new System.Windows.Forms.MenuItem("Configuration...");
+            var menuItemConfig = new System.Windows.Forms.MenuItem("Configuration...") {DefaultItem = true};
             menuItemConfig.Click += menuItemConfigurationOnClick;
-            var menuItemExit = new System.Windows.Forms.MenuItem("Exit...");
+            var menuItemExit = new System.Windows.Forms.MenuItem("Exit Application");
             menuItemExit.Click += (s, args) => exitApplication();
-            _notifyIcon.ContextMenu = new System.Windows.Forms.ContextMenu(new[] { menuItemConfig, new System.Windows.Forms.MenuItem("-"), menuItemExit });
+            _notifyIcon.ContextMenu =
+                new System.Windows.Forms.ContextMenu(new[]
+                {menuItemConfig, new System.Windows.Forms.MenuItem("-"), menuItemExit});
 
-            MainWindow.Show();
+            setWindowVisibilityBehaviour();
+        }
+
+        /// <summary> Sets app behaviour on tray icon click and hotkey  </summary>
+        private void setWindowVisibilityBehaviour(bool toShowBalloonTip = false)
+        {
+            if (DataManager.Configuration.ListVisibilityType == ListVisibilityTypes.OnHotkey)
+            {
+                try
+                {
+                    _hook = new KeyboardHook();
+                    // Register the event that is fired after the key press
+                    _hook.KeyPressed += hook_KeyPressed;
+                    // Register the Ctrl+Alt+S combination as hotkey (Alt Gr = Ctrl+Alt)
+                    _hook.RegisterHotKey(ModifierKeys.Control | ModifierKeys.Alt, Keys.S);
+                }
+                catch (InvalidOperationException exception)
+                {
+                    MessageBox.Show(exception.Message);
+                }
+            }
+            else
+            {
+                _hook = null;
+            }
+
+            if (toShowBalloonTip)
+            {
+                if (DataManager.Configuration.ListVisibilityType == ListVisibilityTypes.OnTrayIconClick ||
+                DataManager.Configuration.ListVisibilityType == ListVisibilityTypes.OnHotkey)
+                {
+                    _notifyIcon.BalloonTipIcon = ToolTipIcon.Info;
+                    _notifyIcon.BalloonTipTitle = @"AngryShop is still running";
+                    _notifyIcon.BalloonTipText = DataManager.Configuration.ListVisibilityType ==
+                        ListVisibilityTypes.OnTrayIconClick
+                        ? "It will appear on tray icon click"
+                        : @"It will appear on ""Ctrl+Alt+S"" hotkey";
+                    _notifyIcon.ShowBalloonTip(3000);
+                }
+            }
         }
 
         private void exitApplication()
@@ -83,6 +138,7 @@ namespace AngryShop
             {
                 MainWindow.Show();
             }
+            _listWindowIsShown = true;
         }
 
 
@@ -99,8 +155,20 @@ namespace AngryShop
             }
 
             var win = new WindowSettings();
-            win.OnCloseWindowSettings += DataManager.OpenConfiguration;
+            win.OnCloseWindowSettings += () =>
+            {
+                DataManager.OpenConfiguration();
+                setWindowVisibilityBehaviour(true);
+            };
             win.Show();
+        }
+
+        /// <summary> Global hotkey pressed event handler  </summary>
+        void hook_KeyPressed(object sender, KeyPressedEventArgs e)
+        {
+            if (!_listWindowIsShown)
+                showMainWindow();
+            else MainWindow.Close();
         }
     }
 }

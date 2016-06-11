@@ -102,6 +102,19 @@ namespace AngryShop.Entities
             }
         }
 
+        private bool _toRestoreClipboard = true;
+
+        /// <summary> Determines if the application restores user clipboard object after replacing text in active textbox </summary>
+        public bool ToRestoreClipboard
+        {
+            get { return _toRestoreClipboard; }
+            set
+            {
+                _toRestoreClipboard = value;
+                OnPropertyChanged("ToRestoreClipboard");
+            }
+        }
+
         private bool _needsSaving = false;
         /// <summary> Configuration instance needs to be saved </summary>
         public bool NeedsSaving
@@ -144,6 +157,7 @@ namespace AngryShop.Entities
             ListVisibilityType = ListVisibilityTypes.OnFocus;
             ToHideCommonWords = true;
             ToLaunchOnSystemStart = true;
+            ToRestoreClipboard = true;
         }
 
         #region [ INotifyPropertyChanged members ]
