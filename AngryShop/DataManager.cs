@@ -25,11 +25,15 @@ namespace AngryShop
         /// <summary> "Common" or "stop" words that are not to be shown in list of words </summary>
         public static List<string> CommonWords { get; set; }
 
+        /// <summary> Process ID for our program </summary>
         public static int ThisProcessId { get; set; }
         //public static int LastProcessId { get; set; }
 
+        /// <summary> Last focused control (we need this to send new text to this control) </summary>
         public static AutomationElement LastAutomationElement { get; set; }
-        //public static string LastAutomationName { get; set; }
+
+        /// <summary> Last focused control text (we need this because LastAutomationElement doesn't always contain the whole text string but only 4096 symbols) </summary>
+        public static string LastAutomationElementText { get; set; }
 
 
         /// <summary> Opens common words </summary>

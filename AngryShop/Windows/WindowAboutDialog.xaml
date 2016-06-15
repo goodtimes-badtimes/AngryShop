@@ -16,7 +16,7 @@
             <TextBlock Text="Simultaneous Text Edit" />
             <TextBlock Name="TextBlockVersion" Text="Version" x:FieldModifier="private" />
             <TextBlock Margin="0,30,0,0">
-                Icon provided by Carleton Assemblies
+                Carleton Assemblies
                 <Hyperlink NavigateUri="http://carletonassemblies.com/" RequestNavigate="handleLinkClick">
                     carletonassemblies.com
                 </Hyperlink>

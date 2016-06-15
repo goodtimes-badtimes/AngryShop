@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Threading;
+using AngryShop.Entities;
 using AngryShop.Helpers;
 using AngryShop.Helpers.Extensions;
 using AngryShop.Items;
@@ -21,15 +21,20 @@ using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using MessageBox = System.Windows.MessageBox;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 using TextBox = System.Windows.Controls.TextBox;
-using TextDataFormat = System.Windows.TextDataFormat;
 
 namespace AngryShop.Windows
 {
     public partial class MainWindow
     {
+        // This is needed for testing and debug
         //[DllImport("Kernel32")]
         //public static extern void AllocConsole();
 
+            
+        /// <summary> We save user clipboard contents here before using clipboard to replace text in active control </summary>
+        private static IDataObject _clipboardObj;
+
+        /// <summary> Bool flag for knowing that text replacing operation is executed right now and getting text from active control must not be executed </summary>
         private bool _textIsReplacedNow;
 
         public MainWindow()
@@ -62,7 +67,7 @@ namespace AngryShop.Windows
             }
         }
 
-
+        /// <summary> Timer tick event handler. Gets text from active control, saves this control and process ID, shows words list in main window </summary>
         void _timer_Tick(object sender, EventArgs e)
         {
             if (_textIsReplacedNow) return; // do nothing if edited text is still sending into text input box
@@ -78,6 +83,7 @@ namespace AngryShop.Windows
                 if (processId == DataManager.ThisProcessId)
                 {
                     //Console.WriteLine("!");
+                    // Do nothing if we focused on our own applicaton window:
                     return;
                 }
 
@@ -100,7 +106,7 @@ namespace AngryShop.Windows
                         focusedElement.Current.ControlType.ProgrammaticName))
                 {
                     if (DataManager.Configuration.ListVisibilityType == ListVisibilityTypes.OnFocus) Hide();
-                    lstItems.ItemsSource = null;
+                    LstItems.ItemsSource = null;
                 }
                 else
                 {
@@ -108,13 +114,14 @@ namespace AngryShop.Windows
                     if (DataManager.Configuration.ListVisibilityType == ListVisibilityTypes.OnFocus) Show();
 
                     DataManager.LastAutomationElement = focusedElement;
+                    DataManager.LastAutomationElementText = text;
 
                     //var textShort = text.Length > 50 ? text.Substring(0, 50) : text;
                     //Console.WriteLine(textShort);
 
                     var listWords = TextHelper.GetListOfUniqueWords(text);
                     if (listWords != null)
-                        lstItems.ItemsSource = listWords;
+                        LstItems.ItemsSource = listWords;
                 }
             }
             catch (Exception)
@@ -126,40 +133,9 @@ namespace AngryShop.Windows
                 // We just will try the same action in the next _timer_Tick()
             }
         }
+        
 
-
-        void replaceText(List<ListItemWord> items)
-        {
-            _textIsReplacedNow = true; // don't get active window text while we replacing it with our edited one
-
-            var element = DataManager.LastAutomationElement;
-            var text = element.GetText();
-            if (!string.IsNullOrEmpty(text))
-            {
-                insertTextUsingUiAutomation(element, TextHelper.GetNewTextForSending(text, items));
-            }
-
-            _textIsReplacedNow = false;
-        }
-
-        private AutomationElementCollection FindElementFromClassName(AutomationElement targetApp, string className)
-        {
-            return targetApp.FindAll(
-                TreeScope.Descendants,
-                new PropertyCondition(AutomationElement.NameProperty, className));
-        }
-
-
-
-        private void previewMouseMove(object sender, MouseEventArgs e)
-        {
-            if (e.LeftButton == MouseButtonState.Pressed && Equals(e.Source, brdMain))
-            {
-                DragMove();
-            }
-        }
-
-
+        /// <summary> Mousedown event handler for list item: show textbox editor for this word </summary>
         private void listItemContent_OnMouseDown(object sender, MouseButtonEventArgs e)
         {
             var block = sender as TextBlock;
@@ -195,36 +171,66 @@ namespace AngryShop.Windows
             }
         }
 
+        /// <summary> Word Editor Textbox keydown event handler: replaces edited words in last active cotrol </summary>
         private void partTextBox_OnPreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter && sender is TextBox)
             {
-                var items = lstItems.ItemsSource as List<ListItemWord>;
+                var items = LstItems.ItemsSource as List<ListItemWord>;
                 if (items != null)
                 {
-                    replaceText(items.Where(p => p.Word != p.WordEdited).ToList());
+                    items = items.Where(p => p.Word != p.WordEdited).ToList();
+
+                    _textIsReplacedNow = true; // don't get active window text while we replacing it with our edited one
+
+                    if (!string.IsNullOrEmpty(DataManager.LastAutomationElementText))
+                    {
+                        insertTextUsingUiAutomation(DataManager.LastAutomationElement, TextHelper.GetNewTextForSending(DataManager.LastAutomationElementText, items));
+                    }
+
+                    _textIsReplacedNow = false;
                 }
-                //var txt = (TextBox) sender;
-                //var grid = txt.Parent as Grid;
-                //if (grid != null)
-                //{
-                //    var border = grid.Children[0] as Border;
-                //    if (border != null)
-                //    {
-                //        var blk = border.Child as TextBlock;
-                //        if (blk != null)
-                //        {
-                //            var oldText = blk.Text;
-                //            blk.Text = txt.Text;
-                //            replaceText(oldText, txt.Text);
-                //        }
-                //    }
-                //}
-                //txt.Visibility = Visibility.Collapsed;
             }
         }
 
+        /// <summary> Context menu item click for adding a word to the common words list </summary>
+        private void MenuItemAddToCommonWordsList_OnClick(object sender, RoutedEventArgs e)
+        {
+            var mnu = sender as System.Windows.Controls.MenuItem;
+            if (mnu != null)
+            {
+                var txtBlck = ((ContextMenu)mnu.Parent).PlacementTarget as TextBlock;
+                if (txtBlck != null)
+                {
+                    var inline = txtBlck.Inlines.FirstInline;
+                    var wordToIgnore = new TextRange(inline.ContentStart, inline.ContentEnd).Text;
 
+                    if (!string.IsNullOrEmpty(wordToIgnore))
+                    {
+                        DataManager.CommonWords.Add(wordToIgnore);
+                        DataManager.SaveCommonWords();
+
+                        var list = LstItems.ItemsSource as List<ListItemWord>;
+                        if (list != null)
+                            list.RemoveAll(liw => liw.Word == wordToIgnore);
+
+                        LstItems.ItemsSource = null;
+                        LstItems.ItemsSource = list;
+                    }
+                }
+            }
+        }
+
+        /// <summary> Dragging window </summary>
+        private void previewMouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed && Equals(e.Source, brdMain))
+            {
+                DragMove();
+            }
+        }
+
+        /// <summary> Closing window </summary>
         private void buttonClose_OnClick(object sender, RoutedEventArgs e)
         {
             DataManager.Configuration.ListVisibilityType = ListVisibilityTypes.OnTrayIconClick;
@@ -233,11 +239,7 @@ namespace AngryShop.Windows
 
 
 
-        private static IDataObject _clipboardObj;
-
-        /// <summary>
-        /// Inserts a string into each text control of interest
-        /// </summary>
+        /// <summary> Inserts a string into text control of interest </summary>
         /// <param name="element">A text control</param>
         /// <param name="value">The string to be inserted</param>
         private static void insertTextUsingUiAutomation(AutomationElement element, string value)
@@ -246,29 +248,19 @@ namespace AngryShop.Windows
             {
                 // Validate arguments / initial setup
                 if (value == null)
-                    throw new ArgumentNullException(
-                        "String parameter must not be null.");
+                    throw new ArgumentNullException("String parameter must not be null.");
 
                 if (element == null)
                     throw new ArgumentNullException("AutomationElement parameter must not be null");
 
-                // Once you have an instance of an AutomationElement,  
-                // check if it supports the ValuePattern pattern.
+                // Once you have an instance of an AutomationElement, check if it supports the ValuePattern pattern
                 object valuePattern = null;
-
-                // Control does not support the ValuePattern pattern 
-                // so use keyboard input to insert content.
-                //
-                // NOTE: Elements that support TextPattern do not support ValuePattern and TextPattern
-                //       does not support setting the text of multi-line edit or document controls.
-                //       For this reason, text input must be simulated n using one of the following methods.
 
                 bool toSendKeys = false;
 
                 if (element.TryGetCurrentPattern(ValuePattern.Pattern, out valuePattern))
                 {
-                    // Control supports the ValuePattern pattern so
-                    // we can use the SetValue method to insert content.
+                    // Control supports the ValuePattern pattern so we can use the SetValue method to insert content.
 
                     // Set focus for input functionality and begin.
                     try
@@ -286,7 +278,7 @@ namespace AngryShop.Windows
                     toSendKeys = true;
                 }
 
-
+                // Control does not support the ValuePattern pattern so use keyboard input to insert content.
                 if (toSendKeys)
                 {
                     // Set focus for input functionality and begin.
@@ -320,32 +312,13 @@ namespace AngryShop.Windows
                             Thread.Sleep(100);
                             try
                             {
-                                System.Windows.Forms.Clipboard.SetDataObject(_clipboardObj);
+                                System.Windows.Forms.Clipboard.SetDataObject(_clipboardObj); // restore user clipboard contents
                             }
                             catch
                             {
                             }
 
                         }
-
-                        //var timer = new System.Windows.Forms.Timer {Interval = 1000};
-                        //timer.Tick += (sender, args) =>
-                        //{
-                        //    // restore previous user clipboard state
-                        //    if (_clipboardObj != null)
-                        //    {
-                        //        try
-                        //        {
-                        //            System.Windows.Forms.Clipboard.SetDataObject(_clipboardObj);
-                        //        }
-                        //        catch
-                        //        {
-                        //        }
-
-                        //    }
-                        //    timer.Stop();
-                        //};
-                        //timer.Start();
                     }
                 }
             }
@@ -358,29 +331,6 @@ namespace AngryShop.Windows
             }
         }
 
-        private void MenuItemAddToCommonWordsList_OnClick(object sender, RoutedEventArgs e)
-        {
-            var mnu = sender as System.Windows.Controls.MenuItem;
-            if (mnu != null)
-            {
-                var txtBlck = ((ContextMenu)mnu.Parent).PlacementTarget as TextBlock;
-                if (txtBlck != null)
-                {
-                    string wordToAdd = txtBlck.Text.Trim();
-                    if (!string.IsNullOrEmpty(wordToAdd))
-                    {
-                        DataManager.CommonWords.Add(wordToAdd);
-                        DataManager.SaveCommonWords();
-
-                        var list = lstItems.ItemsSource as List<string>;
-                        if (list != null)
-                            list.Remove(txtBlck.Text);
-
-                        lstItems.ItemsSource = null;
-                        lstItems.ItemsSource = list;
-                    }
-                }
-            }
-        }
+        
     }
 }

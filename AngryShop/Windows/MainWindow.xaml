@@ -36,7 +36,8 @@
                                             <Span Typography.Variants="Superscript" FontFamily="Calibri" FontSize="16"><Run Text="{Binding Path=Count}"/></Span>
                                         </TextBlock>
                                     </Border>
-                                    <TextBox Text="{Binding Path=WordEdited, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" x:Name="PART_TextBox" Visibility="{Binding VisibilityEdited, Mode=TwoWay}" PreviewKeyDown="partTextBox_OnPreviewKeyDown"/>
+                                    <TextBox Text="{Binding Path=WordEdited, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" x:Name="PART_TextBox"
+                                             Visibility="{Binding EditorVisibility, Mode=TwoWay}" PreviewKeyDown="partTextBox_OnPreviewKeyDown"/>
                                 </Grid>
                             </ControlTemplate>
                         </Setter.Value>
@@ -45,7 +46,8 @@
             </Grid.Resources>
 
             <RepeatButton VerticalAlignment="Top" HorizontalAlignment="Right" Width="20" Height="20" Margin="0,5,5,0" Style="{StaticResource CloseLineButton}" Content="M 0 0 L 10 10 M 10 0 L 0 10" Click="buttonClose_OnClick"/>
-            <ListBox Margin="5,28,7,20" Background="Transparent" Name="lstItems" BorderThickness="0" Style="{StaticResource GlassListBox}">
+            <ListBox Margin="5,28,7,20" Background="Transparent" Name="LstItems" BorderThickness="0" Style="{StaticResource GlassListBox}"
+                     x:FieldModifier="private">
                 <!--<ListBox.ItemContainerStyle>
                     <Style TargetType="ListBoxItem">
                         <Setter Property="Margin" Value="5"/>

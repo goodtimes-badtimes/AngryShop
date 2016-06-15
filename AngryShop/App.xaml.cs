@@ -158,7 +158,7 @@ namespace AngryShop
             win.OnCloseWindowSettings += () =>
             {
                 DataManager.OpenConfiguration();
-                setWindowVisibilityBehaviour(true);
+                setWindowVisibilityBehaviour(!_listWindowIsShown);
             };
             win.Show();
         }

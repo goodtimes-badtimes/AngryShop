@@ -63,6 +63,7 @@
     </ApplicationDefinition>
     <Compile Include="DataManager.cs" />
     <Compile Include="Entities\Configuration.cs" />
+    <Compile Include="Entities\ListItemWord.cs" />
     <Compile Include="Helpers\Extensions\AutomationExtensions.cs" />
     <Compile Include="Helpers\Extensions\EnumerationExtension.cs" />
     <Compile Include="Helpers\Extensions\KeyboardHook.cs" />

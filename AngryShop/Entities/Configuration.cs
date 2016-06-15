@@ -24,7 +24,7 @@ namespace AngryShop.Entities
         }
 
 
-        private bool _sortOrderIsAscending = true;
+        private bool _sortOrderIsAscending = false;
         /// <summary> Words list sort order is ascending </summary>
         public bool SortOrderIsAscending
         {
@@ -61,7 +61,7 @@ namespace AngryShop.Entities
         }
 
 
-        private ListVisibilityTypes _listVisibilityType = ListVisibilityTypes.OnFocus;
+        private ListVisibilityTypes _listVisibilityType = ListVisibilityTypes.OnTrayIconClick;
 
         /// <summary> Words list sort order </summary>
         public ListVisibilityTypes ListVisibilityType
@@ -152,9 +152,9 @@ namespace AngryShop.Entities
         public void SetToDefaultCommonValues()
         {
             SortOrderType = SortOrderTypes.ByFrequency;
-            SortOrderIsAscending = true;
+            SortOrderIsAscending = false;
             FrequencyThreshold = 2;
-            ListVisibilityType = ListVisibilityTypes.OnFocus;
+            ListVisibilityType = ListVisibilityTypes.OnTrayIconClick;
             ToHideCommonWords = true;
             ToLaunchOnSystemStart = true;
             ToRestoreClipboard = true;

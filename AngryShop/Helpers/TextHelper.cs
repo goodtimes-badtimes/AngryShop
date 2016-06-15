@@ -1,37 +1,18 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
+using AngryShop.Entities;
 using AngryShop.Items.Enums;
 
 namespace AngryShop.Helpers
 {
-    class ListItemWord : INotifyPropertyChanged
-    {
-        private string _word;
-        public string Word { get { return _word; } set { _word = value; OnPropertyChanged("Word"); } }
-        public string WordEdited { get; set; }
-        public int Count { get; set; }
-
-        private Visibility _visibilityEdited = Visibility.Collapsed;
-        public Visibility VisibilityEdited { get { return _visibilityEdited; } set { _visibilityEdited = value; OnPropertyChanged("VisibilityEdited"); } }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected void OnPropertyChanged(string propertyName)
-        {
-            PropertyChangedEventHandler handler = PropertyChanged;
-
-            if (handler != null)
-            {
-                handler(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
-    }
+    /// <summary>
+    /// Helper class for all text operations custom logic
+    /// </summary>
     static class TextHelper
     {
-
+        /// <summary> Returns a list of unique substrings (words) from the whole text string </summary>
         public static IEnumerable<ListItemWord> GetListOfUniqueWords(string text)
         {
             var regex = new Regex(@"(\b\w{2,}\b)", RegexOptions.Compiled);
@@ -39,11 +20,7 @@ namespace AngryShop.Helpers
             var listWords = new List<string>();
             if (DataManager.Configuration.ToHideCommonWords)
             {
-                foreach (Match match in words)
-                {
-                    if (!DataManager.CommonWords.Contains(match.Value))
-                        listWords.Add(match.Value);
-                }
+                listWords.AddRange(from Match match in words where !DataManager.CommonWords.Contains(match.Value) select match.Value);
             }
             else
             {
@@ -73,15 +50,15 @@ namespace AngryShop.Helpers
             return selectedWords.ToList();
         }
 
-        public static string GetNewTextForSending(string text, List<ListItemWord> items)
+        /// <summary> Replaces substrings in text with new ones and returns new whole text string </summary>
+        public static string GetNewTextForSending(string text, IEnumerable<ListItemWord> items)
         {
-            //text = text.Replace(string.Format("{0}", oldSubstring), string.Format(" {0} ", newSubstring));
             foreach (var listItemWord in items)
             {
                 var regex = new Regex(string.Format(@"\b({0})\b", listItemWord.Word), RegexOptions.Compiled);
                 text = regex.Replace(text, listItemWord.WordEdited);
                 listItemWord.Word = listItemWord.WordEdited;
-                listItemWord.VisibilityEdited = Visibility.Collapsed;
+                listItemWord.EditorVisibility = Visibility.Collapsed;
             }
             return text;
         }
