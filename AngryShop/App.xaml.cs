@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Forms;
 using AngryShop.Helpers.Extensions;
+using AngryShop.Items;
 using AngryShop.Items.Enums;
 using AngryShop.Windows;
 using Application = System.Windows.Application;
@@ -45,7 +46,7 @@ namespace AngryShop
                     DataManager.SaveConfiguration();
                 }
             };
-
+            
             MainWindow.Closed += (sender, args) =>
             {
                 foreach (Window win in Current.Windows)
@@ -54,16 +55,24 @@ namespace AngryShop
                 }
             };
 
+            ((MainWindow) MainWindow).OnWindowShowing += () =>
+            {
+                _listWindowIsShown = true;
+            };
+
             _notifyIcon = new System.Windows.Forms.NotifyIcon
             {
                 Icon = AngryShop.Properties.Resources.STE_White_MultiImage,
                 Visible = true,
-                Text = "Simultaneous Text Edit"
+                Text = Constants.ProgramName
             };
             _notifyIcon.MouseClick += (s, args) =>
             {
-                if (DataManager.Configuration.ListVisibilityType == ListVisibilityTypes.OnTrayIconClick)
-                    showMainWindow();
+                if (args.Button == MouseButtons.Left)
+                {
+                    if (DataManager.Configuration.ListVisibilityType == ListVisibilityTypes.OnTrayIconClick)
+                        ((MainWindow) MainWindow).ShowWindow();
+                }
             };
 
             var menuItemConfig = new System.Windows.Forms.MenuItem("Configuration...") {DefaultItem = true};
@@ -106,11 +115,11 @@ namespace AngryShop
                 DataManager.Configuration.ListVisibilityType == ListVisibilityTypes.OnHotkey)
                 {
                     _notifyIcon.BalloonTipIcon = ToolTipIcon.Info;
-                    _notifyIcon.BalloonTipTitle = @"AngryShop is still running";
+                    _notifyIcon.BalloonTipTitle = Constants.ProgramName;
                     _notifyIcon.BalloonTipText = DataManager.Configuration.ListVisibilityType ==
                         ListVisibilityTypes.OnTrayIconClick
-                        ? "It will appear on tray icon click"
-                        : @"It will appear on ""Ctrl+Alt+S"" hotkey";
+                        ? @"Program is still running. It will appear on tray icon click"
+                        : @"Program is still running. It will appear on ""Ctrl+Alt+S"" hotkey";
                     _notifyIcon.ShowBalloonTip(3000);
                 }
             }
@@ -124,22 +133,23 @@ namespace AngryShop
             _notifyIcon = null;
         }
 
-        private void showMainWindow()
-        {
-            if (MainWindow.IsVisible)
-            {
-                if (MainWindow.WindowState == WindowState.Minimized)
-                {
-                    MainWindow.WindowState = WindowState.Normal;
-                }
-                MainWindow.Activate();
-            }
-            else
-            {
-                MainWindow.Show();
-            }
-            _listWindowIsShown = true;
-        }
+
+        //private void showMainWindow()
+        //{
+        //    if (MainWindow.IsVisible)
+        //    {
+        //        if (MainWindow.WindowState == WindowState.Minimized)
+        //        {
+        //            MainWindow.WindowState = WindowState.Normal;
+        //        }
+        //        MainWindow.Activate();
+        //    }
+        //    else
+        //    {
+        //        MainWindow.Show();
+        //    }
+        //    _listWindowIsShown = true;
+        //}
 
 
         /// <summary> "Configuration..." menu item </summary>
@@ -167,7 +177,7 @@ namespace AngryShop
         void hook_KeyPressed(object sender, KeyPressedEventArgs e)
         {
             if (!_listWindowIsShown)
-                showMainWindow();
+                ((MainWindow)MainWindow).ShowWindow();
             else MainWindow.Close();
         }
     }

@@ -32,16 +32,22 @@ namespace AngryShop.Entities
             set
             {
                 _sortOrderIsAscending = value;
+                _sortOrderIsDescending = !value;
                 OnPropertyChanged("SortOrderIsAscending");
+                OnPropertyChanged("SortOrderIsDescending");
             }
         }
+
+        private bool _sortOrderIsDescending = true;
         /// <summary> Words list sort order is descending </summary>
         public bool SortOrderIsDescending
         {
-            get { return !_sortOrderIsAscending; }
+            get { return _sortOrderIsDescending; }
             set
             {
+                _sortOrderIsDescending = value;
                 _sortOrderIsAscending = !value;
+                OnPropertyChanged("SortOrderIsAscending");
                 OnPropertyChanged("SortOrderIsDescending");
             }
         }

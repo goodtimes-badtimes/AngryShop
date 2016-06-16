@@ -26,11 +26,13 @@ namespace AngryShop.Windows
 {
     public partial class MainWindow
     {
+        public SomethingHappenedDelegate OnWindowShowing;
+
         // This is needed for testing and debug
         //[DllImport("Kernel32")]
         //public static extern void AllocConsole();
 
-            
+
         /// <summary> We save user clipboard contents here before using clipboard to replace text in active control </summary>
         private static IDataObject _clipboardObj;
 
@@ -105,13 +107,13 @@ namespace AngryShop.Windows
                     !"ControlType.Document ControlType.Pane ControlType.Editor ControlType.ComboBox".Contains(
                         focusedElement.Current.ControlType.ProgrammaticName))
                 {
-                    if (DataManager.Configuration.ListVisibilityType == ListVisibilityTypes.OnFocus) Hide();
+                    if (DataManager.Configuration.ListVisibilityType == ListVisibilityTypes.OnFocus) Close();
                     LstItems.ItemsSource = null;
                 }
                 else
                 {
                     var text = focusedElement.GetText() ?? string.Empty;
-                    if (DataManager.Configuration.ListVisibilityType == ListVisibilityTypes.OnFocus) Show();
+                    if (DataManager.Configuration.ListVisibilityType == ListVisibilityTypes.OnFocus) ShowWindow();
 
                     DataManager.LastAutomationElement = focusedElement;
                     DataManager.LastAutomationElementText = text;
@@ -237,6 +239,23 @@ namespace AngryShop.Windows
             Close();
         }
 
+        /// <summary> Activates this window and announces about it by calling OnWindowShowing delegate </summary>
+        public void ShowWindow()
+        {
+            if (IsVisible)
+            {
+                if (WindowState == WindowState.Minimized)
+                {
+                    WindowState = WindowState.Normal;
+                }
+                Activate();
+            }
+            else
+            {
+                Show();
+            }
+            if (OnWindowShowing != null) OnWindowShowing();
+        }
 
 
         /// <summary> Inserts a string into text control of interest </summary>
