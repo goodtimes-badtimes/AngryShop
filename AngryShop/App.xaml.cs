@@ -157,14 +157,14 @@ namespace AngryShop
         {
             foreach (Window window in Application.Current.Windows)
             {
-                if (window is WindowSettings)
+                if (window is WindowConfiguration)
                 {
                     window.Activate();
                     return;
                 }
             }
 
-            var win = new WindowSettings();
+            var win = new WindowConfiguration();
             win.OnCloseWindowSettings += () =>
             {
                 DataManager.OpenConfiguration();

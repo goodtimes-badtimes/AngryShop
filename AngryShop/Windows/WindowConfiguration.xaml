@@ -1,10 +1,11 @@
-﻿<Window x:Class="AngryShop.Windows.WindowSettings"
+﻿<Window x:Class="AngryShop.Windows.WindowConfiguration"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:extensions="clr-namespace:AngryShop.Helpers.Extensions"
         xmlns:local="clr-namespace:AngryShop.Items.Enums"
         Title="Configuration" Height="370" Width="380" Background="WhiteSmoke"
-        Icon="pack://application:,,,/Simultaneous Text Edit;component/Resources/STE_White_MultiImage.ico">
+        Icon="pack://application:,,,/Simultaneous Text Edit;component/Resources/STE_White_MultiImage.ico"
+        ResizeMode="NoResize">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -28,7 +29,7 @@
                        ToolTip="Minimum frequency for words to appear on list"/>
             <TextBlock Text="List visibility:" HorizontalAlignment="Right" Margin="0,25,15,0"/>
             <TextBlock Text="Launch on system start:" HorizontalAlignment="Right" Margin="0,22,15,0"/>
-            <TextBlock Text="Suppress selected words:" HorizontalAlignment="Right" Margin="0,7,15,0"/>
+            <TextBlock Text="Ignore certain words:" HorizontalAlignment="Right" Margin="0,7,15,0"/>
             <TextBlock Text="Restore clipboard data:" HorizontalAlignment="Right" Margin="0,7,15,0"/>
         </StackPanel>
 
@@ -52,7 +53,7 @@
             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                 <CheckBox IsChecked="{Binding Path=ToHideCommonWords}"/>
                 <TextBlock Margin="20,-2,0,0">
-                    <Hyperlink Click="HyperlinkEditWordsList_OnClick">Edit words list</Hyperlink>
+                    <Hyperlink Click="HyperlinkEditWordsList_OnClick">Edit word list</Hyperlink>
                 </TextBlock>
             </StackPanel>
             <CheckBox Margin="0,10,0,0" IsChecked="{Binding Path=ToRestoreClipboard}"/>

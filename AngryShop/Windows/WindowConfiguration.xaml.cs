@@ -5,10 +5,10 @@ using AngryShop.Items;
 
 namespace AngryShop.Windows
 {
-    public partial class WindowSettings
+    public partial class WindowConfiguration
     {
         public SomethingHappenedDelegate OnCloseWindowSettings;
-        public WindowSettings()
+        public WindowConfiguration()
         {
             InitializeComponent();
 

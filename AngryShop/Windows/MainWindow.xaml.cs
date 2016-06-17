@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
 using System.Windows.Automation;
@@ -9,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Threading;
 using AngryShop.Entities;
 using AngryShop.Helpers;
@@ -68,6 +70,25 @@ namespace AngryShop.Windows
                 Height = DataManager.Configuration.WinSizeHeight.Value;
             }
         }
+
+        #region Disable maximize functionality through the WinAPI call
+
+        [DllImport("user32.dll")]
+        private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+        [DllImport("user32.dll")]
+        private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+
+        private const int GWL_STYLE = -16;
+        private const int WS_MAXIMIZEBOX = 0x10000;
+
+        private void Window_SourceInitialized(object sender, EventArgs e)
+        {
+            var hwnd = new WindowInteropHelper((Window)sender).Handle;
+            var value = GetWindowLong(hwnd, GWL_STYLE);
+            SetWindowLong(hwnd, GWL_STYLE, (int)(value & ~WS_MAXIMIZEBOX));
+        }
+
+        #endregion
 
         /// <summary> Timer tick event handler. Gets text from active control, saves this control and process ID, shows words list in main window </summary>
         void _timer_Tick(object sender, EventArgs e)

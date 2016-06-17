@@ -6,7 +6,8 @@
         AllowsTransparency="True" ResizeMode="CanResizeWithGrip"
         Opacity="0.8"
         Topmost="True"
-        Background="Transparent" ShowInTaskbar="False">
+        Background="Transparent" ShowInTaskbar="False"
+        SourceInitialized="Window_SourceInitialized">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -29,7 +30,7 @@
                                         <TextBlock HorizontalAlignment="Left" Margin="0,0,0,0" MouseLeftButtonDown="listItemContent_OnMouseDown">
                                             <TextBlock.ContextMenu>
                                                 <ContextMenu>
-                                                    <MenuItem Header="Add to suppression list" Click="MenuItemAddToCommonWordsList_OnClick"/>
+                                                    <MenuItem Header="Ignore this word" Click="MenuItemAddToCommonWordsList_OnClick"/>
                                                 </ContextMenu>
                                             </TextBlock.ContextMenu>
                                             <Run Text="{Binding Path=Word}"/>

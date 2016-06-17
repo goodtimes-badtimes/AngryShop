@@ -81,8 +81,8 @@
     <Compile Include="Windows\WindowEditCommonWords.xaml.cs">
       <DependentUpon>WindowEditCommonWords.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\WindowSettings.xaml.cs">
-      <DependentUpon>WindowSettings.xaml</DependentUpon>
+    <Compile Include="Windows\WindowConfiguration.xaml.cs">
+      <DependentUpon>WindowConfiguration.xaml</DependentUpon>
     </Compile>
     <Page Include="Windows\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -116,7 +116,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\WindowSettings.xaml">
+    <Page Include="Windows\WindowConfiguration.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
