@@ -25,12 +25,14 @@
 
         <StackPanel HorizontalAlignment="Right" Grid.Row="0" Grid.Column="0" Margin="20,20,0,0">
             <TextBlock Text="Sort Order:" HorizontalAlignment="Right" Margin="0,5,15,0"/>
-            <TextBlock Text="Frequency threshold ≥" HorizontalAlignment="Right" Margin="0,58,10,0"
+            <TextBlock Text="Frequency threshold ≥" HorizontalAlignment="Right" Margin="0,55,10,0"
                        ToolTip="Minimum frequency for words to appear on list"/>
-            <TextBlock Text="List visibility:" HorizontalAlignment="Right" Margin="0,25,15,0"/>
-            <TextBlock Text="Launch on system start:" HorizontalAlignment="Right" Margin="0,22,15,0"/>
-            <TextBlock Text="Ignore certain words:" HorizontalAlignment="Right" Margin="0,7,15,0"/>
-            <TextBlock Text="Restore clipboard data:" HorizontalAlignment="Right" Margin="0,7,15,0"/>
+            
+            <TextBlock Text="List visibility:" HorizontalAlignment="Right" Margin="0,19,15,0"/>
+            
+            <TextBlock Text="Launch on system start:" HorizontalAlignment="Right" Margin="0,34,15,0"/>
+            <TextBlock Text="Ignore certain words:" HorizontalAlignment="Right" Margin="0,9,15,0"/>
+            <TextBlock Text="Restore clipboard data:" HorizontalAlignment="Right" Margin="0,9,15,0"/>
         </StackPanel>
 
         <StackPanel Grid.Column="1" HorizontalAlignment="Left" Grid.Row="0" Margin="0,20,20,0">
@@ -45,11 +47,14 @@
 
             <TextBox Width="100" Margin="0,10,0,0" Text="{Binding FrequencyThreshold, UpdateSourceTrigger=PropertyChanged}"/>
             
-            <ComboBox Width="140" SelectedIndex="0" Margin="0,15,0,0"
+            <!--<ComboBox Width="140" SelectedIndex="0" Margin="0,15,0,0"
                       ItemsSource="{Binding Source={extensions:Enumeration {x:Type local:ListVisibilityTypes}}}"
-                      DisplayMemberPath="Description" SelectedValue="{Binding ListVisibilityType}" SelectedValuePath="Value"/>
+                      DisplayMemberPath="Description" SelectedValue="{Binding ListVisibilityType}" SelectedValuePath="Value"/>-->
 
-            <CheckBox Margin="0,20,0,0" IsChecked="{Binding Path=ToLaunchOnSystemStart}"/>
+            <CheckBox IsChecked="{Binding Path=ToDisplayListOnHotkey}" Margin="0,15,0,0">On hotkey (Ctrl+Alt+S)</CheckBox>
+            <CheckBox Margin="0,5,0,0" IsChecked="{Binding Path=ToDisplayListOnTextFocus}">On input box focus</CheckBox>
+
+            <CheckBox Margin="0,15,0,0" IsChecked="{Binding Path=ToLaunchOnSystemStart}"/>
             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                 <CheckBox IsChecked="{Binding Path=ToHideCommonWords}"/>
                 <TextBlock Margin="20,-2,0,0">

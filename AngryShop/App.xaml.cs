@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Windows;
 using System.Windows.Forms;
+using AngryShop.Helpers;
 using AngryShop.Helpers.Extensions;
 using AngryShop.Items;
-using AngryShop.Items.Enums;
 using AngryShop.Windows;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
@@ -19,10 +20,19 @@ namespace AngryShop
         private bool _listWindowIsShown;
         private bool _isExit;
 
-        
+        static Mutex _mutex = new Mutex(true, "{8F6F5AC4-B9A1-45fd-A8CF-72F04E6BDE8F}");
+
         protected override void OnStartup(StartupEventArgs e)
         {
+            if (!_mutex.WaitOne(TimeSpan.Zero, true))
+            {
+                MessageBox.Show("Another instance of the application is already running.", Constants.ProgramName, MessageBoxButton.OK, MessageBoxImage.Information);
+                Current.Shutdown();
+                return;
+            }
+
             base.OnStartup(e);
+
 
             DataManager.ThisProcessId = Process.GetCurrentProcess().Id;
             DataManager.OpenConfiguration();
@@ -70,8 +80,7 @@ namespace AngryShop
             {
                 if (args.Button == MouseButtons.Left)
                 {
-                    if (DataManager.Configuration.ListVisibilityType == ListVisibilityTypes.OnTrayIconClick)
-                        ((MainWindow) MainWindow).ShowWindow();
+                    ((MainWindow) MainWindow).ShowWindow();
                 }
             };
 
@@ -84,42 +93,51 @@ namespace AngryShop
                 {menuItemConfig, new System.Windows.Forms.MenuItem("-"), menuItemExit});
 
             setWindowVisibilityBehaviour();
+            ((MainWindow)MainWindow).ShowWindow();
+
+            _mutex.ReleaseMutex();
         }
 
         /// <summary> Sets app behaviour on tray icon click and hotkey  </summary>
         private void setWindowVisibilityBehaviour(bool toShowBalloonTip = false)
         {
-            if (DataManager.Configuration.ListVisibilityType == ListVisibilityTypes.OnHotkey)
+            if (DataManager.Configuration.ToDisplayListOnHotkey)
             {
-                try
+                if (_hook == null)
                 {
-                    _hook = new KeyboardHook();
-                    // Register the event that is fired after the key press
-                    _hook.KeyPressed += hook_KeyPressed;
-                    // Register the Ctrl+Alt+S combination as hotkey (Alt Gr = Ctrl+Alt)
-                    _hook.RegisterHotKey(ModifierKeys.Control | ModifierKeys.Alt, Keys.S);
-                }
-                catch (InvalidOperationException exception)
-                {
-                    MessageBox.Show(exception.Message);
+                    try
+                    {
+                        _hook = new KeyboardHook();
+                        // Register the event that is fired after the key press
+                        _hook.KeyPressed += hook_KeyPressed;
+                        // Register the Ctrl+Alt+S combination as hotkey (Alt Gr = Ctrl+Alt)
+                        _hook.RegisterHotKey(ModifierKeys.Control | ModifierKeys.Alt, Keys.S);
+                    }
+                    catch (InvalidOperationException exception)
+                    {
+                        MessageBox.Show(exception.Message);
+                        LogHelper.SaveError(exception);
+                    }
                 }
             }
             else
             {
-                _hook = null;
+                if (_hook != null)
+                {
+                    _hook.Dispose();
+                    _hook = null;
+                }
             }
 
             if (toShowBalloonTip)
             {
-                if (DataManager.Configuration.ListVisibilityType == ListVisibilityTypes.OnTrayIconClick ||
-                DataManager.Configuration.ListVisibilityType == ListVisibilityTypes.OnHotkey)
+                if (!DataManager.Configuration.ToDisplayListOnTextFocus)
                 {
                     _notifyIcon.BalloonTipIcon = ToolTipIcon.Info;
                     _notifyIcon.BalloonTipTitle = Constants.ProgramName;
-                    _notifyIcon.BalloonTipText = DataManager.Configuration.ListVisibilityType ==
-                        ListVisibilityTypes.OnTrayIconClick
-                        ? @"Program is still running. It will appear on tray icon click"
-                        : @"Program is still running. It will appear on ""Ctrl+Alt+S"" hotkey";
+                    _notifyIcon.BalloonTipText = @"Word List will appear on tray icon click";
+                    if (DataManager.Configuration.ToDisplayListOnHotkey)
+                        _notifyIcon.BalloonTipText += @" or ""Ctrl+Alt+S"" hotkey";
                     _notifyIcon.ShowBalloonTip(3000);
                 }
             }
@@ -132,25 +150,6 @@ namespace AngryShop
             _notifyIcon.Dispose();
             _notifyIcon = null;
         }
-
-
-        //private void showMainWindow()
-        //{
-        //    if (MainWindow.IsVisible)
-        //    {
-        //        if (MainWindow.WindowState == WindowState.Minimized)
-        //        {
-        //            MainWindow.WindowState = WindowState.Normal;
-        //        }
-        //        MainWindow.Activate();
-        //    }
-        //    else
-        //    {
-        //        MainWindow.Show();
-        //    }
-        //    _listWindowIsShown = true;
-        //}
-
 
         /// <summary> "Configuration..." menu item </summary>
         private void menuItemConfigurationOnClick(object sender, EventArgs eventArgs)
@@ -165,10 +164,10 @@ namespace AngryShop
             }
 
             var win = new WindowConfiguration();
-            win.OnCloseWindowSettings += () =>
+            win.OnCloseWindowSettings += saved =>
             {
                 DataManager.OpenConfiguration();
-                setWindowVisibilityBehaviour(!_listWindowIsShown);
+                setWindowVisibilityBehaviour(saved && !_listWindowIsShown);
             };
             win.Show();
         }

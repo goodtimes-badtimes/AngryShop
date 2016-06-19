@@ -27,7 +27,6 @@ namespace AngryShop
 
         /// <summary> Process ID for our program </summary>
         public static int ThisProcessId { get; set; }
-        //public static int LastProcessId { get; set; }
 
         /// <summary> Last focused control (we need this to send new text to this control) </summary>
         public static AutomationElement LastAutomationElement { get; set; }
@@ -77,7 +76,7 @@ namespace AngryShop
         /// <summary> Opens instance of Configuration </summary>
         public static void OpenConfiguration()
         {
-            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.ConfigFileName);
+            string path = getPathToConfigFileName();
             if (!File.Exists(path))
             {
                 Configuration = new Configuration();
@@ -105,6 +104,9 @@ namespace AngryShop
                 catch (Exception e)
                 {
                     LogHelper.SaveError(e);
+                    Configuration = new Configuration();
+                    Configuration.SetToDefaultCommonValues();
+                    SaveConfiguration();
                 }
             }
             Configuration.NeedsSaving = false;
@@ -116,7 +118,7 @@ namespace AngryShop
         {
             try
             {
-                string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.ConfigFileName);
+                string path = getPathToConfigFileName();
 
                 var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write);
 
@@ -139,8 +141,6 @@ namespace AngryShop
             }
         }
 
-
-        
 
 
         private static string getPathToConfigFileName()

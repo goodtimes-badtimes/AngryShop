@@ -11,8 +11,8 @@ namespace AngryShop.Items.Enums
         /// <summary> Always enabled as per System Tray icon behaviour </summary>
         [Description("On Tray Icon Click")]
         OnTrayIconClick = 1,
-        /// <summary> Listens for use of key combination </summary>
-        [Description("On Hotkey")]
-        OnHotkey = 2
+        ///// <summary> Listens for use of key combination </summary>
+        //[Description("On Hotkey")]
+        //OnHotkey = 2
     }
 }

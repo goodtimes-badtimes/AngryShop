@@ -7,7 +7,7 @@ namespace AngryShop.Windows
 {
     public partial class WindowConfiguration
     {
-        public SomethingHappenedDelegate OnCloseWindowSettings;
+        public DialogClosedDelegate OnCloseWindowSettings;
         public WindowConfiguration()
         {
             InitializeComponent();
@@ -22,14 +22,14 @@ namespace AngryShop.Windows
 
             DataContext = null;
             Close();
-            if (OnCloseWindowSettings != null) OnCloseWindowSettings();
+            if (OnCloseWindowSettings != null) OnCloseWindowSettings(true);
         }
 
         private void ButtonCancel_Click(object sender, RoutedEventArgs e)
         {
             DataContext = null;
             Close();
-            if (OnCloseWindowSettings != null) OnCloseWindowSettings();
+            if (OnCloseWindowSettings != null) OnCloseWindowSettings(false);
         }
 
         private void ButtonSetToDefaults_Click(object sender, RoutedEventArgs e)

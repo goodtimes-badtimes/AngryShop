@@ -54,7 +54,6 @@ namespace AngryShop.Entities
 
 
         private int _frequencyThreshold = 2;
-
         /// <summary> Minimum frequency for words to appear on list (default >=2) </summary>
         public int FrequencyThreshold
         {
@@ -67,22 +66,45 @@ namespace AngryShop.Entities
         }
 
 
-        private ListVisibilityTypes _listVisibilityType = ListVisibilityTypes.OnTrayIconClick;
+        //private ListVisibilityTypes _listVisibilityType = ListVisibilityTypes.OnTrayIconClick;
+        ///// <summary> Words list sort order </summary>
+        //public ListVisibilityTypes ListVisibilityType
+        //{
+        //    get { return _listVisibilityType; }
+        //    set
+        //    {
+        //        _listVisibilityType = value;
+        //        OnPropertyChanged("ListVisibilityType");
+        //    }
+        //}
 
-        /// <summary> Words list sort order </summary>
-        public ListVisibilityTypes ListVisibilityType
+        private bool _toDisplayListOnTextFocus = false;
+        /// <summary> To display main window on text input box focus </summary>
+        public bool ToDisplayListOnTextFocus
         {
-            get { return _listVisibilityType; }
+            get { return _toDisplayListOnTextFocus; }
             set
             {
-                _listVisibilityType = value;
-                OnPropertyChanged("ListVisibilityType");
+                _toDisplayListOnTextFocus = value;
+                OnPropertyChanged("ToDisplayListOnTextFocus");
             }
         }
 
+        private bool _toDisplayListOnHotkey = true;
+        /// <summary> To use hotkey combination "Ctrl+Alt+S" </summary>
+        public bool ToDisplayListOnHotkey
+        {
+            get { return _toDisplayListOnHotkey; }
+            set
+            {
+                _toDisplayListOnHotkey = value;
+                OnPropertyChanged("ToDisplayListOnHotkey");
+            }
+        }
+        
+
 
         private bool _toHideCommonWords = true;
-
         /// <summary> Allows user to display/hide "common" words </summary>
         public bool ToHideCommonWords
         {
@@ -96,7 +118,6 @@ namespace AngryShop.Entities
 
 
         private bool _toLaunchOnSystemStart = true;
-
         /// <summary> Determines if the application launches at startup </summary>
         public bool ToLaunchOnSystemStart
         {
@@ -160,7 +181,9 @@ namespace AngryShop.Entities
             SortOrderType = SortOrderTypes.ByFrequency;
             SortOrderIsAscending = false;
             FrequencyThreshold = 2;
-            ListVisibilityType = ListVisibilityTypes.OnTrayIconClick;
+            //ListVisibilityType = ListVisibilityTypes.OnTrayIconClick;
+            ToDisplayListOnTextFocus = false;
+            ToDisplayListOnHotkey = true;
             ToHideCommonWords = true;
             ToLaunchOnSystemStart = true;
             ToRestoreClipboard = true;

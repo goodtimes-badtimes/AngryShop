@@ -128,13 +128,13 @@ namespace AngryShop.Windows
                     !"ControlType.Document ControlType.Pane ControlType.Editor ControlType.ComboBox".Contains(
                         focusedElement.Current.ControlType.ProgrammaticName))
                 {
-                    if (DataManager.Configuration.ListVisibilityType == ListVisibilityTypes.OnFocus) Close();
+                    if (DataManager.Configuration.ToDisplayListOnTextFocus) Close();
                     LstItems.ItemsSource = null;
                 }
                 else
                 {
                     var text = focusedElement.GetText() ?? string.Empty;
-                    if (DataManager.Configuration.ListVisibilityType == ListVisibilityTypes.OnFocus) ShowWindow();
+                    if (DataManager.Configuration.ToDisplayListOnTextFocus) ShowWindow();
 
                     DataManager.LastAutomationElement = focusedElement;
                     DataManager.LastAutomationElementText = text;
@@ -256,7 +256,7 @@ namespace AngryShop.Windows
         /// <summary> Closing window </summary>
         private void buttonClose_OnClick(object sender, RoutedEventArgs e)
         {
-            DataManager.Configuration.ListVisibilityType = ListVisibilityTypes.OnTrayIconClick;
+            DataManager.Configuration.ToDisplayListOnTextFocus = false;
             Close();
         }
 
@@ -269,7 +269,6 @@ namespace AngryShop.Windows
                 {
                     WindowState = WindowState.Normal;
                 }
-                Activate();
             }
             else
             {
