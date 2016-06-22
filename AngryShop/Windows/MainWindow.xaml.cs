@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
 using System.Windows.Automation;
@@ -16,7 +15,6 @@ using AngryShop.Entities;
 using AngryShop.Helpers;
 using AngryShop.Helpers.Extensions;
 using AngryShop.Items;
-using AngryShop.Items.Enums;
 using ContextMenu = System.Windows.Controls.ContextMenu;
 using IDataObject = System.Windows.Forms.IDataObject;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
@@ -71,24 +69,29 @@ namespace AngryShop.Windows
             }
         }
 
-        #region Disable maximize functionality through the WinAPI call
+        /// <summary>  WPF-styled wndProc function to receive PInvoke calls </summary>
+        private IntPtr wndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            if (msg == WinApiHelper.WM_SHOWFIRSTINSTANCE)
+            {
+                ShowWindow();
+                handled = true;
+            }
+            return IntPtr.Zero;
+        }
 
-        [DllImport("user32.dll")]
-        private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
-        [DllImport("user32.dll")]
-        private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
-
-        private const int GWL_STYLE = -16;
-        private const int WS_MAXIMIZEBOX = 0x10000;
 
         private void Window_SourceInitialized(object sender, EventArgs e)
         {
+            // Disable maximize functionality through the WinAPI call
             var hwnd = new WindowInteropHelper((Window)sender).Handle;
-            var value = GetWindowLong(hwnd, GWL_STYLE);
-            SetWindowLong(hwnd, GWL_STYLE, (int)(value & ~WS_MAXIMIZEBOX));
+            WinApiHelper.DisableMaximizeFunctionality(hwnd);
+
+            // Create WPF-styled wndProc function to receive PInvoke calls
+            var source = PresentationSource.FromVisual(this) as System.Windows.Interop.HwndSource;
+            if (source != null) source.AddHook(wndProc);
         }
 
-        #endregion
 
         /// <summary> Timer tick event handler. Gets text from active control, saves this control and process ID, shows words list in main window </summary>
         void _timer_Tick(object sender, EventArgs e)
@@ -369,6 +372,14 @@ namespace AngryShop.Windows
                 #endif
             }
         }
+
+        //private void MainWindow_OnClosing(object sender, CancelEventArgs e)
+        //{
+        //    // Remove the hook for WndProc when our window is closing
+        //    IntPtr windowHandle = (new WindowInteropHelper(this)).Handle;
+        //    HwndSource src = HwndSource.FromHwnd(windowHandle);
+        //    src.RemoveHook(new HwndSourceHook(this.wndProc));
+        //}
 
         
     }
