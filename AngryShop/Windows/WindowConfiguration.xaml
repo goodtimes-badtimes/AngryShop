@@ -56,7 +56,7 @@
 
             <CheckBox Margin="0,15,0,0" IsChecked="{Binding Path=ToLaunchOnSystemStart}"/>
             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                <CheckBox IsChecked="{Binding Path=ToHideCommonWords}"/>
+                <CheckBox IsChecked="{Binding Path=ToHideIgnoredWords}"/>
                 <TextBlock Margin="20,-2,0,0">
                     <Hyperlink Click="HyperlinkEditWordsList_OnClick">Edit word list</Hyperlink>
                 </TextBlock>

@@ -104,15 +104,15 @@ namespace AngryShop.Entities
         
 
 
-        private bool _toHideCommonWords = true;
-        /// <summary> Allows user to display/hide "common" words </summary>
-        public bool ToHideCommonWords
+        private bool _toHideIgnoredWords = true;
+        /// <summary> Allows user to display/hide "ignored" words </summary>
+        public bool ToHideIgnoredWords
         {
-            get { return _toHideCommonWords; }
+            get { return _toHideIgnoredWords; }
             set
             {
-                _toHideCommonWords = value;
-                OnPropertyChanged("ToHideCommonWords");
+                _toHideIgnoredWords = value;
+                OnPropertyChanged("ToHideIgnoredWords");
             }
         }
 
@@ -176,7 +176,7 @@ namespace AngryShop.Entities
         /// <summary>
         /// Sets all values to default
         /// </summary>
-        public void SetToDefaultCommonValues()
+        public void SetToDefaultValues()
         {
             SortOrderType = SortOrderTypes.ByFrequency;
             SortOrderIsAscending = false;
@@ -184,7 +184,7 @@ namespace AngryShop.Entities
             //ListVisibilityType = ListVisibilityTypes.OnTrayIconClick;
             ToDisplayListOnTextFocus = false;
             ToDisplayListOnHotkey = true;
-            ToHideCommonWords = true;
+            ToHideIgnoredWords = true;
             ToLaunchOnSystemStart = true;
             ToRestoreClipboard = true;
         }

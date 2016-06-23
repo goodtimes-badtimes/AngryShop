@@ -4,18 +4,18 @@ using System.Windows;
 
 namespace AngryShop.Windows
 {
-    public partial class WindowEditCommonWords
+    public partial class WindowEditIgnoredWords
     {
-        public WindowEditCommonWords()
+        public WindowEditIgnoredWords()
         {
             InitializeComponent();
 
             var strb = new StringBuilder();
-            foreach (var commonWord in DataManager.CommonWords)
+            foreach (var word in DataManager.IgnoredWords)
             {
-                strb.AppendFormat("{0}\n", commonWord);
+                strb.AppendFormat("{0}\n", word);
             }
-            TextBoxCommonWords.Text = strb.ToString();
+            TextBoxIgnoredWords.Text = strb.ToString();
         }
 
         private void ButtonCancel_OnClick(object sender, RoutedEventArgs e)
@@ -25,7 +25,7 @@ namespace AngryShop.Windows
 
         private void ButtonOk_OnClick(object sender, RoutedEventArgs e)
         {
-            var arrStr = TextBoxCommonWords.Text.Split(new[] { '\n' });
+            var arrStr = TextBoxIgnoredWords.Text.Split(new[] { '\n' });
             var listWords = new List<string>();
             for (int i = 0; i < arrStr.Length; i++)
             {
@@ -33,8 +33,8 @@ namespace AngryShop.Windows
                 if (!string.IsNullOrEmpty(arrStr[i]))
                     listWords.Add(arrStr[i]);
             }
-            DataManager.CommonWords = listWords;
-            DataManager.SaveCommonWords();
+            DataManager.IgnoredWords = listWords;
+            DataManager.SaveIgnoredWords();
             Close();
         }
     }

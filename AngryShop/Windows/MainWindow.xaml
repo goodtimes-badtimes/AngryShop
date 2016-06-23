@@ -30,7 +30,7 @@
                                         <TextBlock HorizontalAlignment="Left" Margin="0,0,0,0" MouseLeftButtonDown="listItemContent_OnMouseDown">
                                             <TextBlock.ContextMenu>
                                                 <ContextMenu>
-                                                    <MenuItem Header="Ignore this word" Click="MenuItemAddToCommonWordsList_OnClick"/>
+                                                    <MenuItem Header="Ignore this word" Click="MenuItemAddToIgnoredWordsList_OnClick"/>
                                                 </ContextMenu>
                                             </TextBlock.ContextMenu>
                                             <Run Text="{Binding Path=Word}"/>

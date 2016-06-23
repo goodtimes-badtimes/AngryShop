@@ -219,8 +219,8 @@ namespace AngryShop.Windows
             }
         }
 
-        /// <summary> Context menu item click for adding a word to the common words list </summary>
-        private void MenuItemAddToCommonWordsList_OnClick(object sender, RoutedEventArgs e)
+        /// <summary> Context menu item click for adding a word to the ignored words list </summary>
+        private void MenuItemAddToIgnoredWordsList_OnClick(object sender, RoutedEventArgs e)
         {
             var mnu = sender as System.Windows.Controls.MenuItem;
             if (mnu != null)
@@ -233,8 +233,8 @@ namespace AngryShop.Windows
 
                     if (!string.IsNullOrEmpty(wordToIgnore))
                     {
-                        DataManager.CommonWords.Add(wordToIgnore);
-                        DataManager.SaveCommonWords();
+                        DataManager.IgnoredWords.Add(wordToIgnore);
+                        DataManager.SaveIgnoredWords();
 
                         var list = LstItems.ItemsSource as List<ListItemWord>;
                         if (list != null)

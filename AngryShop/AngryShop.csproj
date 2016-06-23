@@ -78,8 +78,8 @@
     <Compile Include="Windows\WindowAboutDialog.xaml.cs">
       <DependentUpon>WindowAboutDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\WindowEditCommonWords.xaml.cs">
-      <DependentUpon>WindowEditCommonWords.xaml</DependentUpon>
+    <Compile Include="Windows\WindowEditIgnoredWords.xaml.cs">
+      <DependentUpon>WindowEditIgnoredWords.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\WindowConfiguration.xaml.cs">
       <DependentUpon>WindowConfiguration.xaml</DependentUpon>
@@ -112,7 +112,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\WindowEditCommonWords.xaml">
+    <Page Include="Windows\WindowEditIgnoredWords.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

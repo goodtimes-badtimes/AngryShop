@@ -22,8 +22,8 @@ namespace AngryShop
         /// <summary> Data from "Config" file </summary>
         public static Configuration Configuration { get; set; }
 
-        /// <summary> "Common" or "stop" words that are not to be shown in list of words </summary>
-        public static List<string> CommonWords { get; set; }
+        /// <summary> "Stop" or ignored words that are not to be shown in list of words </summary>
+        public static List<string> IgnoredWords { get; set; }
 
         /// <summary> Process ID for our program </summary>
         public static int ThisProcessId { get; set; }
@@ -35,10 +35,10 @@ namespace AngryShop
         public static string LastAutomationElementText { get; set; }
 
 
-        /// <summary> Opens common words </summary>
-        public static void OpenCommonWords()
+        /// <summary> Opens ignored words file </summary>
+        public static void OpenIgnoredWordsFile()
         {
-            var path = getPathToCommonWordsFile();
+            var path = getPathToIgnoredWordsFile();
             if (File.Exists(path))
             {
                 try
@@ -46,30 +46,30 @@ namespace AngryShop
                     using (var sr = new StreamReader(path))
                     {
                         string text = sr.ReadToEnd();
-                        CommonWords = text.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                        IgnoredWords = text.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList();
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(string.Format(@"Could not read the ""Common words"" file.\r\n{0}", ex.Message));
-                    CommonWords = new List<string>();
+                    MessageBox.Show(string.Format(@"Could not read the ""Ignored words"" file.\r\n{0}", ex.Message));
+                    IgnoredWords = new List<string>();
                 }
             }
             else
             {
-                CommonWords = new List<string>();
+                IgnoredWords = new List<string>();
             }
         }
 
-        public static void SaveCommonWords()
+        public static void SaveIgnoredWords()
         {
-            CommonWords = CommonWords.OrderBy(p => p).ToList();
+            IgnoredWords = IgnoredWords.OrderBy(p => p).ToList();
             var strb = new StringBuilder();
-            foreach (var commonWord in CommonWords)
+            foreach (var word in IgnoredWords)
             {
-                strb.AppendFormat("{0}\n", commonWord);
+                strb.AppendFormat("{0}\n", word);
             }
-            var path = getPathToCommonWordsFile();
+            var path = getPathToIgnoredWordsFile();
             File.WriteAllText(path, strb.ToString());
         }
 
@@ -80,7 +80,7 @@ namespace AngryShop
             if (!File.Exists(path))
             {
                 Configuration = new Configuration();
-                Configuration.SetToDefaultCommonValues();
+                Configuration.SetToDefaultValues();
                 SaveConfiguration();
             }
             else
@@ -105,7 +105,7 @@ namespace AngryShop
                 {
                     LogHelper.SaveError(e);
                     Configuration = new Configuration();
-                    Configuration.SetToDefaultCommonValues();
+                    Configuration.SetToDefaultValues();
                     SaveConfiguration();
                 }
             }
@@ -148,9 +148,9 @@ namespace AngryShop
             return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.ConfigFileName);
         }
 
-        private static string getPathToCommonWordsFile()
+        private static string getPathToIgnoredWordsFile()
         {
-            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.CommonWordsFileName);
+            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.IgnoredWordsFileName);
         }
     }
 }

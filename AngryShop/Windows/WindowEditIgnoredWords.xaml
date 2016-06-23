@@ -1,4 +1,4 @@
-﻿<Window x:Class="AngryShop.Windows.WindowEditCommonWords"
+﻿<Window x:Class="AngryShop.Windows.WindowEditIgnoredWords"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Edit ignored words" Height="500" Width="400" 
@@ -11,7 +11,7 @@
         </ResourceDictionary>
     </Window.Resources>
     <Grid>
-        <TextBox Name="TextBoxCommonWords" Style="{Binding null}" Margin="10,10,10,50"
+        <TextBox Name="TextBoxIgnoredWords" Style="{Binding null}" Margin="10,10,10,50"
                  VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
                  TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" x:FieldModifier="private" />
         <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,10,10">

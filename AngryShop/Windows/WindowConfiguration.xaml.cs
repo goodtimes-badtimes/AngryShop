@@ -34,12 +34,12 @@ namespace AngryShop.Windows
 
         private void ButtonSetToDefaults_Click(object sender, RoutedEventArgs e)
         {
-            ((Configuration)DataContext).SetToDefaultCommonValues();
+            ((Configuration)DataContext).SetToDefaultValues();
         }
 
         private void HyperlinkEditWordsList_OnClick(object sender, RoutedEventArgs e)
         {
-            var win = new WindowEditCommonWords {Owner = this};
+            var win = new WindowEditIgnoredWords {Owner = this};
             win.ShowDialog();
         }
 

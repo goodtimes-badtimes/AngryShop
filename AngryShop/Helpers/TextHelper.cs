@@ -18,9 +18,9 @@ namespace AngryShop.Helpers
             var regex = new Regex(@"(\b\w{2,}\b)", RegexOptions.Compiled);
             var words = regex.Matches(text);
             var listWords = new List<string>();
-            if (DataManager.Configuration.ToHideCommonWords)
+            if (DataManager.Configuration.ToHideIgnoredWords)
             {
-                listWords.AddRange(from Match match in words where !DataManager.CommonWords.Contains(match.Value) select match.Value);
+                listWords.AddRange(from Match match in words where !DataManager.IgnoredWords.Contains(match.Value) select match.Value);
             }
             else
             {

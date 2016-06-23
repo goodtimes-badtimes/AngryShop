@@ -60,7 +60,7 @@ namespace AngryShop
 
             DataManager.ThisProcessId = Process.GetCurrentProcess().Id;
             DataManager.OpenConfiguration();
-            DataManager.OpenCommonWords();
+            DataManager.OpenIgnoredWordsFile();
 
             MainWindow = new MainWindow();
             MainWindow.Closing += (sender, args) =>
